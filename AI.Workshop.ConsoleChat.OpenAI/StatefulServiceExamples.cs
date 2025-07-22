@@ -1,5 +1,4 @@
-﻿using Azure;
-using Microsoft.Extensions.AI;
+﻿using Microsoft.Extensions.AI;
 
 namespace AI.Workshop.ConsoleChat.OpenAI;
 

@@ -2,7 +2,6 @@
 using Azure.AI.OpenAI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
-using System.Reflection.Emit;
 using System.Threading.RateLimiting;
 
 namespace AI.Workshop.ConsoleChat.OpenAI;

@@ -1,29 +1,9 @@
-﻿using Azure;
-using Azure.AI.OpenAI;
-using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.AI;
 
 namespace AI.Workshop.ConsoleChat.OpenAI;
 
-internal class BasicChatExamples
+internal class BasicChatExamples : AzureOpenAIBase
 {
-    private readonly IChatClient _client;
-
-    internal BasicChatExamples()
-    {
-        var config = new ConfigurationBuilder()
-            .AddUserSecrets<Program>()
-            .Build();
-
-        var endpoint = config["AZURE_OPENAI_ENDPOINT"];
-        var key = config["AZURE_OPENAI_KEY"];
-        var deployment = config["AZURE_OPENAI_DEPLOYMENT"];
-
-        _client = new AzureOpenAIClient(new Uri(endpoint), new AzureKeyCredential(key))
-            .GetChatClient(deployment)
-            .AsIChatClient();
-    }
-
     internal async Task HelloPrompt()
     {
         var text = File.ReadAllText("benefits.md");
