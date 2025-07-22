@@ -1,31 +1,30 @@
 ﻿using AI.Workshop.ConsoleChat.OpenAI;
 
-//var config = new ConfigurationBuilder()
-//    .AddUserSecrets<Program>()
-//    .Build();
+if (1 != 1)
+{ 
+    var basics = new BasicChatExamples();
 
-//var endpoint = config["AZURE_OPENAI_ENDPOINT"];
-//var key = config["AZURE_OPENAI_KEY"];
-//var deployment = config["AZURE_OPENAI_DEPLOYMENT"];
+    // 1) the basic usage is to request a chat response:
+    await basics.HelloPrompt();
 
-//var client = new AzureOpenAIClient(new Uri(endpoint), new AzureKeyCredential(key))
-//    .GetChatClient(deployment)
-//    .AsIChatClient();
+    // 2) Request a chat response by providing roles:
+    await basics.RequestChatResponse();
 
-var basics = new BasicChatExamples();
+    // 3) Request a chat response with history:
+    await basics.RequestChatResponseWithHistory();
 
-// 1) the basic usage is to request a chat response:
-await basics.HelloPrompt();
+    // 4) Request a streaming chat response (using IAsyncEnumerable):
+    await basics.RequestStreamingChatResponse();
 
-// 2) Request a chat response by providing roles:
-await basics.RequestChatResponse();
+    // 5) Request a streaming chat response with history:
+    await basics.RequestStreamingChatResponseWithHistory();
+}
 
-// 3) Request a chat response with history:
-await basics.RequestChatResponseWithHistory();
+var builderExamples = new ChatClientBuilderExamples();
 
-// 4) Request a streaming chat response (using IAsyncEnumerable):
-await basics.RequestStreamingChatResponse();
+// 1) Tool calling example:
+await builderExamples.ToolCalling();
 
-// 5) Request a streaming chat response with history:
-await basics.RequestStreamingChatResponseWithHistory();
+// 2) Distributed cache example:
+await builderExamples.DistributedCache();
 
