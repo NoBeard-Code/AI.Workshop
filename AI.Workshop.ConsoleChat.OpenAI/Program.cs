@@ -45,13 +45,15 @@ await middleware.UsageWithMiddleware();
 await middleware.UsageWithoutCustomClass();
 */
 
+/*
 var stateful = new StatefulServiceExamples();
 
 // 1) Stateless prompts example:
-//await stateful.SendStatelessPrompts();
+await stateful.SendStatelessPrompts();
 
 // 2) Stateful prompts example:
-//await stateful.SendStatefulPromptsExplicitly();
+await stateful.SendStatefulPromptsExplicitly();
 
 // 3) Implicitly stateful prompts example:
 await stateful.SendStatefulPromptsImplicitly();
+*/
