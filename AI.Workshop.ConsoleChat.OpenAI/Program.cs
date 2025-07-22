@@ -57,3 +57,18 @@ await stateful.SendStatefulPromptsExplicitly();
 // 3) Implicitly stateful prompts example:
 await stateful.SendStatefulPromptsImplicitly();
 */
+
+var embeddings = new EmbeddingExamples();
+
+// 1) Generate embeddings for a single text:
+//await embeddings.GenerateEmbeddingsForSingleInput();
+
+// 2) Generate embeddings for multiple texts:
+//await embeddings.GenerateEmbeddingsForMultipleInputs();
+
+// 3) Generate a vector from a text:
+await embeddings.GenerateVectorFromInput();
+
+// 4) Use a delegating embedding generator with rate limiting:
+await embeddings.UseDelegatingEmbeddingGenerator();
+
