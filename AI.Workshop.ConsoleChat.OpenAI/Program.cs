@@ -1,5 +1,7 @@
 ﻿using AI.Workshop.ConsoleChat.OpenAI;
 
+Console.WriteLine("Welcome to the AI Workshop Console Chat OpenAI examples!\r\n");
+
 /*
 var basics = new BasicChatExamples();
 
@@ -58,17 +60,20 @@ await stateful.SendStatefulPromptsExplicitly();
 await stateful.SendStatefulPromptsImplicitly();
 */
 
+/*
 var embeddings = new EmbeddingExamples();
 
 // 1) Generate embeddings for a single text:
-//await embeddings.GenerateEmbeddingsForSingleInput();
+await embeddings.GenerateEmbeddingsForSingleInput();
 
 // 2) Generate embeddings for multiple texts:
-//await embeddings.GenerateEmbeddingsForMultipleInputs();
+await embeddings.GenerateEmbeddingsForMultipleInputs();
 
 // 3) Generate a vector from a text:
 await embeddings.GenerateVectorFromInput();
 
 // 4) Use a delegating embedding generator with rate limiting:
 await embeddings.UseDelegatingEmbeddingGenerator();
+*/
+
 
