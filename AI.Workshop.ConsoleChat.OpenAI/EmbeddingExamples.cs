@@ -6,6 +6,8 @@ using System.Threading.RateLimiting;
 
 namespace AI.Workshop.ConsoleChat.OpenAI;
 
+// https://learn.microsoft.com/en-us/dotnet/ai/microsoft-extensions-ai
+
 internal class EmbeddingExamples
 {
     private readonly IEmbeddingGenerator<string, Embedding<float>> _generator;

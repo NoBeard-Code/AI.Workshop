@@ -2,6 +2,8 @@
 
 namespace AI.Workshop.ConsoleChat.OpenAI;
 
+// https://learn.microsoft.com/en-us/dotnet/ai/microsoft-extensions-ai
+
 /// <summary>
 /// Azure OpenAI is stateless by default, 
 /// but offers stateful capabilities when you opt into features like Assistants API or stored completions.

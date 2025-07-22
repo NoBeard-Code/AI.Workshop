@@ -3,6 +3,8 @@ using System.Threading.RateLimiting;
 
 namespace AI.Workshop.ConsoleChat.OpenAI;
 
+// https://learn.microsoft.com/en-us/dotnet/ai/microsoft-extensions-ai
+
 internal class ChatClientMiddlewareExamples : AzureOpenAIBase
 {
     internal async Task BasicUsage()

@@ -2,6 +2,8 @@
 
 namespace AI.Workshop.ConsoleChat.OpenAI;
 
+// https://learn.microsoft.com/en-us/dotnet/ai/quickstarts/prompt-model?pivots=azure-openai
+
 internal class BasicChatExamples : AzureOpenAIBase
 {
     internal async Task HelloPrompt()
