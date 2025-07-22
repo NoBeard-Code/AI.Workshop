@@ -5,6 +5,8 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using OpenTelemetry;
+using OpenTelemetry.Trace;
 
 namespace AI.Workshop.ConsoleChat.OpenAI;
 
@@ -65,5 +67,23 @@ internal class ChatClientBuilderExamples
             }
             Console.WriteLine();
         }
+    }
+
+    internal async Task UseTelemetry()
+    {
+        var sourceName = "AI.Workshop.ConsoleChat.OpenAI";
+
+        var tracerProvider = Sdk.CreateTracerProviderBuilder()
+            .AddSource(sourceName)
+            .AddConsoleExporter()
+            .Build();
+
+        var clientBuilder = new ChatClientBuilder(_client)
+            .UseOpenTelemetry(
+                sourceName: sourceName,
+                configure: c => c.EnableSensitiveData = true)
+            .Build();
+
+        Console.WriteLine((await _client.GetResponseAsync("What is AI?")).Text);
     }
 }

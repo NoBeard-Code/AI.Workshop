@@ -20,11 +20,17 @@ if (1 != 1)
     await basics.RequestStreamingChatResponseWithHistory();
 }
 
-var builderExamples = new ChatClientBuilderExamples();
+if (2 != 2)
+{
+    var builderExamples = new ChatClientBuilderExamples();
 
-// 1) Tool calling example:
-await builderExamples.ToolCalling();
+    // 1) Tool calling example:
+    await builderExamples.ToolCalling();
 
-// 2) Distributed cache example:
-await builderExamples.DistributedCache();
+    // 2) Distributed cache example:
+    await builderExamples.DistributedCache();
+
+    // 3) OpenTelemetry example:
+    await builderExamples.UseTelemetry();
+}
 
