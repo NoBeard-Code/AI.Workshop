@@ -1,34 +1,14 @@
-﻿using Azure;
-using Azure.AI.OpenAI;
-using Microsoft.Extensions.AI;
+﻿using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
 
 namespace AI.Workshop.ConsoleChat.OpenAI;
 
-internal class ChatClientBuilderExamples
+internal class ChatClientBuilderExamples : AzureOpenAIBase
 {
-    private readonly IChatClient _client;
-
-    internal ChatClientBuilderExamples()
-    {
-        var config = new ConfigurationBuilder()
-            .AddUserSecrets<Program>()
-            .Build();
-
-        var endpoint = config["AZURE_OPENAI_ENDPOINT"];
-        var key = config["AZURE_OPENAI_KEY"];
-        var deployment = config["AZURE_OPENAI_DEPLOYMENT"];
-
-        _client = new AzureOpenAIClient(new Uri(endpoint), new AzureKeyCredential(key))
-            .GetChatClient(deployment)
-            .AsIChatClient();
-    }
-
     internal async Task ToolCalling()
     {
         string GetCurrentWeather() => Random.Shared.NextDouble() > 0.5 ? "It's sunny" : "It's raining";

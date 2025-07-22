@@ -1,30 +1,10 @@
-﻿using Azure;
-using Azure.AI.OpenAI;
-using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.AI;
 using System.Threading.RateLimiting;
 
 namespace AI.Workshop.ConsoleChat.OpenAI;
 
-internal class ChatClientMiddlewareExamples
+internal class ChatClientMiddlewareExamples : AzureOpenAIBase
 {
-    private readonly IChatClient _client;
-
-    internal ChatClientMiddlewareExamples()
-    {
-        var config = new ConfigurationBuilder()
-            .AddUserSecrets<Program>()
-            .Build();
-
-        var endpoint = config["AZURE_OPENAI_ENDPOINT"];
-        var key = config["AZURE_OPENAI_KEY"];
-        var deployment = config["AZURE_OPENAI_DEPLOYMENT"];
-
-        _client = new AzureOpenAIClient(new Uri(endpoint), new AzureKeyCredential(key))
-            .GetChatClient(deployment)
-            .AsIChatClient();
-    }
-
     internal async Task BasicUsage()
     {
         var client = new RateLimitingChatClient(_client,
