@@ -34,3 +34,14 @@ if (2 != 2)
     await builderExamples.UseTelemetry();
 }
 
+var middleware = new ChatClientMiddlewareExamples();
+
+// 1) Basic usage with RateLimitingChatClient:
+//await middleware.BasicUsage();
+
+// 2) Usage with middleware:
+//await middleware.UsageWithMiddleware();
+
+// 3) Usage without custom class:
+await middleware.UsageWithoutCustomClass();
+
