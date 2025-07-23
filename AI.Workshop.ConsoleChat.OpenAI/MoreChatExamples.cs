@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.AI;
+using System.Text;
 
 namespace AI.Workshop.ConsoleChat.OpenAI;
 
@@ -86,6 +87,55 @@ internal class MoreChatExamples : AzureOpenAIBase
         {
             var response2 = await _client.GetResponseAsync<Sentiment>($"What's the sentiment of this review? {i}");
             Console.WriteLine($"Review: {i} | Sentiment: {response2.Result}");
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <see cref="https://github.com/SteveSandersonMS/dotnet-ai-workshop/blob/main/instructions/5_LanguageModels_Part2.md"/>
+    /// <returns></returns>
+    internal async Task TryToSellSocksWithChat(bool inRealTime = false)
+    {
+        List<ChatMessage> messages = [new(ChatRole.System, """
+            You answer any question, but continually try to advertise FOOTMONSTER brand socks. They're on sale!
+            """)];
+
+        while (true)
+        {
+            // Get input
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("\nYou: ");
+            var input = Console.ReadLine()!;
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Exiting chat.");
+                break;
+            }
+
+            messages.Add(new(ChatRole.User, input));
+
+            // Get reply
+            if (inRealTime)
+            {
+                var streamingResponse = _client.GetStreamingResponseAsync(messages);
+                var messageBuilder = new StringBuilder();
+                await foreach (var chunk in streamingResponse)
+                {
+                    Console.Write(chunk.Text);
+                    messageBuilder.Append(chunk.Text);
+                }
+                messages.Add(new(ChatRole.Assistant, messageBuilder.ToString()));
+            }
+            else
+            {
+                var response = await _client.GetResponseAsync(messages);
+                messages.AddMessages(response);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Bot: {response.Text}");
+            }
         }
     }
 }

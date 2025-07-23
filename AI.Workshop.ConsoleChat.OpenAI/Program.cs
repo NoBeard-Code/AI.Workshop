@@ -76,18 +76,20 @@ await embeddings.GenerateVectorFromInput();
 await embeddings.UseDelegatingEmbeddingGenerator();
 */
 
-/*
+
 var more = new MoreChatExamples();
 
 // 1) Hiking chat example:
-await more.HikingChat();
+//await more.HikingChat();
 
 // 2) Sentiment analysis example:
-await more.RequestStructuredOutput();
+//await more.RequestStructuredOutput();
 
 // 3) Sentiment analysis for multiple inputs:
-await more.SentimentAnalysisForMoreInputs();
-*/
+//await more.SentimentAnalysisForMoreInputs();
+
+// 4) Chat with biased responses:
+await more.TryToSellSocksWithChat(true);
 
 /*
 var semanticSearch = new SemanticSearchExamples();
