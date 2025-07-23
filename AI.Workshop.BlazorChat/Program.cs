@@ -1,10 +1,23 @@
 using AI.Workshop.BlazorChat.Components;
+using Azure;
+using Azure.AI.OpenAI;
+using Microsoft.Extensions.AI;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+var endpoint = builder.Configuration["AZURE_OPENAI_ENDPOINT"];
+var key = builder.Configuration["AZURE_OPENAI_KEY"];
+var deployment = builder.Configuration["AZURE_OPENAI_DEPLOYMENT"];
+
+var chatClient = new AzureOpenAIClient(new Uri(endpoint), new AzureKeyCredential(key))
+    .GetChatClient(deployment)
+    .AsIChatClient();
+
+builder.Services.AddChatClient(chatClient);
 
 var app = builder.Build();
 
