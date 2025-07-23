@@ -1,0 +1,95 @@
+﻿@page "/quiz"
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>Quiz</PageTitle>
+
+<h1>Quiz</h1>
+
+<h2>Question @currentQuestionNumber of @numQuestions. Your score: @pointsScored points</h2>
+
+<p class="question">@(currentQuestionText ?? "Getting question...")</p>
+
+<EditForm Model="@this" OnValidSubmit="@SubmitAnswerAsync" OnInvalidSubmit="@(() => answerInput.FocusAsync())">
+    <textarea @ref="@answerInput" @bind="@UserAnswer" placeholder="Type your answer..." disabled="@DisableForm"></textarea>
+    <p><button type="submit" class="btn btn-primary" disabled="@DisableForm">Submit</button></p>
+
+    <DataAnnotationsValidator />
+    <ValidationMessage For="@(() => UserAnswer)" />
+</EditForm>
+
+@if (!string.IsNullOrEmpty(currentQuestionOutcome))
+{
+    <h3>@currentQuestionOutcome</h3>
+
+    @if (currentQuestionNumber < numQuestions)
+    {
+        <button class="btn btn-primary" @onclick="@MoveToNextQuestionAsync">Next question</button>
+    }
+    else
+    {
+        <p><strong>That's all for the quiz. You got @pointsScored points.</strong></p>
+        <p><a class="btn btn-primary" href="">Home</a></p>
+    }
+}
+
+@code {    
+    private const string QuizSubject = "Your choice of subject goes here. Be descriptive.";
+
+    private ElementReference answerInput;
+    private int numQuestions = 5;
+    private int pointsScored = 0;
+
+    private int currentQuestionNumber = 0;
+    private string? currentQuestionText;
+    private string? currentQuestionOutcome;
+    private bool answerSubmitted;
+    private bool DisableForm => currentQuestionText is null || answerSubmitted;
+
+    [Required]
+    public string? UserAnswer { get; set; }
+
+    protected override Task OnInitializedAsync()
+        => MoveToNextQuestionAsync();
+
+    private async Task MoveToNextQuestionAsync()
+    {
+        // Can't move on until you answer the question and we mark it
+        if (currentQuestionNumber > 0 && string.IsNullOrEmpty(currentQuestionOutcome))
+        {
+            return;
+        }
+
+        // Reset state for the next question
+        currentQuestionNumber++;
+        currentQuestionText = null;
+        currentQuestionOutcome = null;
+        answerSubmitted = false;
+        UserAnswer = null;
+
+        // TODO:
+        //  - Ask the LLM for a question on the subject 'QuizSubject'
+        //  - Assign the question text to 'currentQuestionText'
+        //  - Make sure it doesn't repeat the previous questions
+    }
+
+    private async Task SubmitAnswerAsync()
+    {
+        // Prevent double-submission
+        if (answerSubmitted)
+        {
+            return;
+        }
+
+        // Mark the answer
+        answerSubmitted = true;
+
+        // TODO:
+        //  - Ask the LLM whether the answer 'UserAnswer' is correct for the question 'currentQuestionText'
+        //  - If it's correct, increment 'pointsScored'
+        //  - Set 'currentQuestionOutcome' to a string explaining why the answer is correct or incorrect
+        currentQuestionOutcome = "TODO: Determine whether that's correct";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+        => await answerInput.FocusAsync();
+}

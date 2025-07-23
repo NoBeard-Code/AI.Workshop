@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.ConsoleChat.Ope
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.ConsoleChat.RAG", "AI.Workshop.ConsoleChat.RAG\AI.Workshop.ConsoleChat.RAG.csproj", "{23FBB498-EA49-4F48-8552-DC57C0D11D45}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.BlazorChat", "AI.Workshop.BlazorChat\AI.Workshop.BlazorChat.csproj", "{DC8E8B4F-D153-407A-AB92-2AF5E8794A92}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{23FBB498-EA49-4F48-8552-DC57C0D11D45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23FBB498-EA49-4F48-8552-DC57C0D11D45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23FBB498-EA49-4F48-8552-DC57C0D11D45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC8E8B4F-D153-407A-AB92-2AF5E8794A92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC8E8B4F-D153-407A-AB92-2AF5E8794A92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC8E8B4F-D153-407A-AB92-2AF5E8794A92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC8E8B4F-D153-407A-AB92-2AF5E8794A92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
