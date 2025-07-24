@@ -22,6 +22,8 @@ await search.GenerateEmbeddingForQueryAsync(userPrompt);
 
 var workflow = new RagWorkflowExamples();
 
-await workflow.InitialMessageLoopAsync();
+//await workflow.InitialMessageLoopAsync();
+
+await workflow.RagWithToolsAsync();
 
 
