@@ -10,11 +10,18 @@ await search.SearchAsync("Which Azure service should I use to store my Word docu
 
 */
 
+/*
 var userPrompt = "I'm testing. Fetch me one article from your knowledge base, a seminar from inhalt index and tell me the current time.";
 
 var search = new AzureSearchExamples();
 
 await search.GenerateEmbeddingForQueryAsync(userPrompt);
 
+
+*/
+
+var workflow = new RagWorkflowExamples();
+
+await workflow.InitialMessageLoopAsync();
 
 
