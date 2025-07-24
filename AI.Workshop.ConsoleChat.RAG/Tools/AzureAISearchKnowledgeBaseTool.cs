@@ -6,11 +6,6 @@ internal class AzureAISearchKnowledgeBaseTool : IChatTool
 {
     public async Task<string> InvokeAsync(IDictionary<string, object> parameters = null, CancellationToken ct = default)
     {
-        if (parameters == null || !parameters.TryGetValue("query", out var queryObj) || queryObj is not string query)
-        {
-            throw new ArgumentException("Parameter 'query' is required and must be a string.");
-        }
-
         // Simulate a search operation
         // In a real implementation, you would call the Azure AI Search service here
 
