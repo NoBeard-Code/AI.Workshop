@@ -22,8 +22,9 @@ internal class RagWorkflowExamples
         var openAiKey = config["AZURE_OPENAI_KEY"];
         var deployment = config["AZURE_OPENAI_DEPLOYMENT"];
 
-        _systemPrompt = config["Prompts:OpenAISystemPrompt"];
-
+        var section = config.GetSection("Prompts:OpenAISystemPrompt");
+        _systemPrompt = string.Join("", section.GetChildren().Select(x => x.Value));
+        
         _client = new AzureOpenAIClient(new Uri(openAiEndpoint), new AzureKeyCredential(openAiKey))
             .GetChatClient(deployment)
             .AsIChatClient();
@@ -35,6 +36,10 @@ internal class RagWorkflowExamples
             .Build();
 
         List<ChatMessage> history = [new(ChatRole.System, _systemPrompt)];
+
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine(_systemPrompt);
+        Console.ResetColor();
 
         while (true)
         {
@@ -67,11 +72,13 @@ internal class RagWorkflowExamples
             var messageBuilder = new StringBuilder();
             await foreach (var chunk in streamingResponse)
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write(chunk.Text);
                 messageBuilder.Append(chunk.Text);
             }
 
             history.Add(new(ChatRole.Assistant, messageBuilder.ToString()));            
+            Console.ResetColor();
         }
     }
 }
