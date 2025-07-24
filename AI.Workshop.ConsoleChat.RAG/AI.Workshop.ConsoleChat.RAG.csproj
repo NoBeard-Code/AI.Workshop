@@ -10,10 +10,17 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
+    <PackageReference Include="Azure.Search.Documents" Version="11.6.1" />
     <PackageReference Include="Microsoft.Extensions.AI" Version="9.7.1" />
     <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="9.7.1-preview.1.25365.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.InMemory" Version="1.60.0-preview" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Prompts.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
