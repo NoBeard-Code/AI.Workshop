@@ -9,6 +9,7 @@ namespace AI.Workshop.ConsoleChat.RAG;
 
 internal class RagWorkflowExamples
 {
+    protected readonly AzureOpenAIClient _innerClient;
     protected readonly IChatClient _client;
     private readonly IConfigurationRoot _configuration;
 
@@ -35,15 +36,20 @@ internal class RagWorkflowExamples
         var openAiEndpoint = config["AZURE_OPENAI_ENDPOINT"];
         var openAiKey = config["AZURE_OPENAI_KEY"];
         var deployment = config["AZURE_OPENAI_DEPLOYMENT"];
+        var searchEndpoint = config["AZURE_SEARCH_ENDPOINT"];
+        var searchKey = config["AZURE_SEARCH_KEY"];
 
         var section = config.GetSection("Prompts:OpenAISystemPrompt");
         _systemPrompt = string.Join("", section.GetChildren().Select(x => x.Value));
+
+        var client = new AzureOpenAIClient(new Uri(openAiEndpoint), new AzureKeyCredential(openAiKey));
         
-        _client = new AzureOpenAIClient(new Uri(openAiEndpoint), new AzureKeyCredential(openAiKey))
+        _innerClient = client;
+        _configuration = config;
+
+        _client = client
             .GetChatClient(deployment)
             .AsIChatClient();
-
-        _configuration = config;
     }
 
     internal async Task InitialMessageLoopAsync()
@@ -156,8 +162,8 @@ internal class RagWorkflowExamples
         Console.ResetColor();
 
         AddToolDefinition("CurrentTimeToolPrompts", new CurrentTimeTool());
-        AddToolDefinition("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool());
-        AddToolDefinition("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool());
+        AddToolDefinition("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexToolMock()); 
+        AddToolDefinition("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseToolMock());
 
         while (true)
         {
@@ -204,8 +210,8 @@ internal class RagWorkflowExamples
         Console.ResetColor();
 
         AddToolDefinition("CurrentTimeToolPrompts", new CurrentTimeTool());
-        AddToolDefinition("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool());
-        AddToolDefinition("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool());
+        AddToolDefinition("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool(_innerClient, _configuration));
+        AddToolDefinition("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool(_innerClient, _configuration));
 
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine($"\nQ: {userPrompt}");
@@ -254,7 +260,17 @@ internal class RagWorkflowExamples
         if (topParameter.Any()) {
             parameters.Add("top", string.Join("", topParameter.Select(x => x.Value)));
         }
-        
+
+        //factoryOptions.ConfigureParameterBinding = parameter =>
+        //{
+        //    if (parameter.Name == "query")
+        //    {
+                
+        //    }
+
+        //    return default;
+        //};
+
         factoryOptions.AdditionalProperties = parameters;
 
         var aiFunction = AIFunctionFactory.Create(

@@ -1,22 +1,16 @@
-﻿using System.Text;
+﻿using Azure.AI.OpenAI;
+using Microsoft.Extensions.Configuration;
 
 namespace AI.Workshop.ConsoleChat.RAG.Tools;
 
-internal class AzureAISearchInhaltIndexTool : IChatTool
+internal class AzureAISearchInhaltIndexTool(AzureOpenAIClient client, IConfigurationRoot config) 
+    : AzureSearchToolBase(client, config), IChatTool
 {
     public async Task<string> InvokeAsync(IDictionary<string, object> parameters = null, CancellationToken ct = default)
     {
-        // Simulate a search operation
-        // In a real implementation, you would call the Azure AI Search service here
+        if (!parameters.TryGetValue("query", out var qObj) || qObj is not string query)
+            throw new ArgumentException($"Missing or invalid query parameter.");
 
-        await Task.Delay(100); // Simulating async operation
-
-        var sb = new StringBuilder();
-        sb.AppendLine("Context from documents in the database:\n");
-
-        // Mock results for demonstration purposes
-        sb.AppendLine("<MOCKED DATA>");
-
-        return sb.ToString();
+        return await InvokeAsync(query, "inhalt-index", ct);
     }
 }
