@@ -4,6 +4,7 @@ using Azure.AI.OpenAI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using System.Text;
+using System.Text.Json;
 
 namespace AI.Workshop.ConsoleChat.RAG;
 
@@ -220,11 +221,24 @@ internal class RagWorkflowExamples
         var streamingResponse = clientBuilder.GetStreamingResponseAsync(history, _chatOptions);
 
         var messageBuilder = new StringBuilder();
-        await foreach (var chunk in streamingResponse)
+        await foreach (var update in streamingResponse)
         {
+            if (update.FinishReason == ChatFinishReason.ToolCalls)
+            {
+                foreach (var functionCall in update.Contents.OfType<FunctionCallContent>())
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"\nTool Call: {functionCall.Name}");
+                    var parameters = functionCall.Arguments;
+                    var json = JsonSerializer.Serialize(parameters, new JsonSerializerOptions { WriteIndented = true });
+                    Console.WriteLine(json);
+                    Console.ResetColor();
+                }
+            }
+
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write(chunk.Text);
-            messageBuilder.Append(chunk.Text);
+            Console.Write(update.Text);
+            messageBuilder.Append(update.Text);
         }
 
         history.Add(new(ChatRole.Assistant, messageBuilder.ToString()));
@@ -261,21 +275,19 @@ internal class RagWorkflowExamples
             parameters.Add("top", string.Join("", topParameter.Select(x => x.Value)));
         }
 
-        //factoryOptions.ConfigureParameterBinding = parameter =>
-        //{
-        //    if (parameter.Name == "query")
-        //    {
-                
-        //    }
-
-        //    return default;
-        //};
-
         factoryOptions.AdditionalProperties = parameters;
 
         var aiFunction = AIFunctionFactory.Create(
             method: tool.InvokeAsync,
             factoryOptions);
+
+        //tool.InvokeAsync(new AIFunctionArguments {
+        //    ["parameters"] = new Dictionary<string, object>
+        //    {
+        //        ["query"] = "I'm testing. Fetch me one article from your knowledge base, a seminar from inhalt index and tell me the current time.",
+        //        ["top"] = 5
+        //    }
+        //});
 
         _chatOptions.Tools!.Add(aiFunction);
     }
