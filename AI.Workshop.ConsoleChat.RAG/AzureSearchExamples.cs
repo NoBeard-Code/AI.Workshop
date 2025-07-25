@@ -259,4 +259,69 @@ internal class AzureSearchExamples
 
         Console.WriteLine(sb.ToString());
     }
+
+    internal async Task SearchIndexTypedAsync(string text, string indexName)
+    {
+        var embedding = await _generator.GenerateAsync(text);
+
+        var embeddingResult = embedding.Vector.ToArray();
+
+        var query = new
+        {
+            QueryText = text,
+            Vector = embeddingResult,
+            IndexName = indexName,
+            TopK = 5,
+            VectorBoost = 1.0f
+        };
+
+        var searchClient = _searchIndexClient.GetSearchClient(indexName);
+
+        var searchOptions = new SearchOptions
+        {
+            Size = query.TopK,
+            Select = { "id", "title", "searchable_content", "summary", "url", "date", "content_type", "tags", "word_count" },
+            IncludeTotalCount = true,
+        };
+
+        searchOptions.VectorSearch = new()
+        {
+            Queries = {
+                new VectorizedQuery(query.Vector)
+                {
+                    Fields = { "embedding" },
+                    KNearestNeighborsCount = query.TopK,
+                    Weight = query.VectorBoost,
+                    Exhaustive = true,
+                }
+            }
+        };
+
+        SearchResults<IndexSearchResult> response = await searchClient.SearchAsync<IndexSearchResult>(query.QueryText, searchOptions);
+
+        var sb = new StringBuilder();
+        sb.AppendLine("Context from documents in the database:\n");
+
+        var idx = 1;
+        await foreach (var result in response.GetResultsAsync())
+        {
+            sb.AppendLine($"--- Document {idx} ---");
+            sb.AppendLine($"**Title:** {result.Document.Title}");
+            sb.AppendLine($"**ID:** {result.Document.Id}");
+            sb.AppendLine($"**Content type:** {result.Document.ContentType}");
+            sb.AppendLine($"**Tags:** {result.Document.Tags}");
+            sb.AppendLine($"**Url:** {result.Document.Url}");
+            sb.AppendLine($"**Score:** {result.Score:F3}");
+            sb.AppendLine();
+            sb.AppendLine($"{result.Document.Content}");
+            sb.AppendLine();
+            idx++;
+        }
+
+        sb.AppendLine("--- User Query ---");
+        sb.AppendLine();
+        sb.AppendLine(text);
+
+        Console.WriteLine(sb.ToString());
+    }
 }

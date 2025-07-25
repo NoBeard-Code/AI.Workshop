@@ -16,8 +16,10 @@ var azSearch = new AzureSearchExamples();
 
 //await azSearch.SearchIndexViaHtmlAsync(userPrompt, "inhalt-index");
 //await azSearch.SearchIndexViaHtmlAsync(userPrompt, "knowledge-base");
-await azSearch.SearchIndexAsync(userPrompt, "inhalt-index");
-await azSearch.SearchIndexAsync(userPrompt, "knowledge-base");
+//await azSearch.SearchIndexAsync(userPrompt, "inhalt-index");
+//await azSearch.SearchIndexAsync(userPrompt, "knowledge-base");
+await azSearch.SearchIndexTypedAsync(userPrompt, "inhalt-index");
+await azSearch.SearchIndexTypedAsync(userPrompt, "knowledge-base");
 
 //var tools = new BasicToolsExamples();
 
