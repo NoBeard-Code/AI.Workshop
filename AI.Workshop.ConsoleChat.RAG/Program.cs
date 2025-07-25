@@ -18,18 +18,18 @@ var azSearch = new AzureSearchExamples();
 //await azSearch.SearchIndexViaHtmlAsync(userPrompt, "knowledge-base");
 //await azSearch.SearchIndexAsync(userPrompt, "inhalt-index");
 //await azSearch.SearchIndexAsync(userPrompt, "knowledge-base");
-await azSearch.SearchIndexTypedAsync(userPrompt, "inhalt-index");
-await azSearch.SearchIndexTypedAsync(userPrompt, "knowledge-base");
+//await azSearch.SearchIndexTypedAsync(userPrompt, "inhalt-index");
+//await azSearch.SearchIndexTypedAsync(userPrompt, "knowledge-base");
 
 //var tools = new BasicToolsExamples();
 
 //await tools.ItemPriceMethod();
 //await tools.ShoppingCartMethods();
 
-//var workflow = new RagWorkflowExamples();
+var workflow = new RagWorkflowExamples();
 
 //await workflow.InitialMessageLoopAsync();
 //await workflow.RagWithBasicToolAsync();
 //await workflow.RagWithToolDefinitionsAsync();
-
+await workflow.RagWithSearchToolsAsync(userPrompt);
 

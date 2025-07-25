@@ -191,6 +191,40 @@ internal class RagWorkflowExamples
         }
     }
 
+    internal async Task RagWithSearchToolsAsync(string userPrompt)
+    {
+        var clientBuilder = new ChatClientBuilder(_client)
+            .UseFunctionInvocation()
+            .Build();
+
+        List<ChatMessage> history = [new(ChatRole.System, _systemPrompt)];
+
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine(_systemPrompt);
+        Console.ResetColor();
+
+        AddToolDefinition("CurrentTimeToolPrompts", new CurrentTimeTool());
+        AddToolDefinition("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool());
+        AddToolDefinition("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool());
+
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine($"\nQ: {userPrompt}");
+        history.Add(new(ChatRole.User, userPrompt));
+
+        var streamingResponse = clientBuilder.GetStreamingResponseAsync(history, _chatOptions);
+
+        var messageBuilder = new StringBuilder();
+        await foreach (var chunk in streamingResponse)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(chunk.Text);
+            messageBuilder.Append(chunk.Text);
+        }
+
+        history.Add(new(ChatRole.Assistant, messageBuilder.ToString()));
+        Console.ResetColor();
+    }
+
     private void AddToolDefinition(string sectionName, IChatTool tool)
     {
         var section = _configuration.GetSection(sectionName);
