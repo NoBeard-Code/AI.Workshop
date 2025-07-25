@@ -14,7 +14,8 @@ var azSearch = new AzureSearchExamples();
 //await azSearch.GenerateEmbeddingForQueryAsync(userPrompt);
 //await azSearch.SearchVectorIndexAsync(userPrompt);
 
-await azSearch.SearchIndexViaHtmlAsync(userPrompt);
+await azSearch.SearchIndexViaHtmlAsync(userPrompt, "inhalt-index");
+await azSearch.SearchIndexViaHtmlAsync(userPrompt, "knowledge-base");
 
 //var tools = new BasicToolsExamples();
 

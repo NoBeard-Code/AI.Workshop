@@ -16,7 +16,7 @@ internal class AzureSearchExamples
     protected readonly IChatClient _chatClient;
     private readonly SearchIndexClient _searchIndexClient;
 
-    private Func<object, Task<HttpResponseMessage>> _getHttpResponseTask;
+    private Func<string, object, Task<HttpResponseMessage>> _getHttpResponseTask;
 
     public AzureSearchExamples()
     {
@@ -39,18 +39,19 @@ internal class AzureSearchExamples
 
         _searchIndexClient = new SearchIndexClient(new Uri(searchEndpoint), new AzureKeyCredential(searchKey));
 
-        var apiVersion = config["AZURE_SEARCH_API_VERSION"] ?? "2024-07-01";
-        var indexName = "inhalt-index";
-        var httpUri = $"{searchEndpoint}/indexes/{indexName}/docs/search?api-version={apiVersion}";
-
-        _getHttpResponseTask = async (payload) =>
+        _getHttpResponseTask = async (indexName, payload) =>
         {
+            var apiVersion = config["AZURE_SEARCH_API_VERSION"] ?? "2024-07-01";
+            var httpUri = $"{searchEndpoint}/indexes/{indexName}/docs/search?api-version={apiVersion}";
+
             using var request = new HttpRequestMessage(HttpMethod.Post, httpUri);
+
             request.Headers.Add("api-key", searchKey);
             request.Content = JsonContent.Create(
                 payload,
                 options: new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
             );
+
             var client = new HttpClient();
             return await client.SendAsync(request);
         };
@@ -69,7 +70,7 @@ internal class AzureSearchExamples
             .ForEach(value => Console.WriteLine($"Vector value: {value}"));
     }
 
-    internal async Task SearchIndexViaHtmlAsync(string text)
+    internal async Task SearchIndexViaHtmlAsync(string text, string indexName)
     {
         var embedding = await _generator.GenerateAsync(text);
 
@@ -79,7 +80,7 @@ internal class AzureSearchExamples
         {
             QueryText = text,
             Vector = embeddingResult,
-            IndexName = "inhalt-index",
+            IndexName = indexName,
             TopK = 5,
             VectorBoost = 1.0f
         };
@@ -104,7 +105,7 @@ internal class AzureSearchExamples
             }
         };
 
-        using var response = await _getHttpResponseTask(payload);
+        using var response = await _getHttpResponseTask(indexName, payload);
         response.EnsureSuccessStatusCode();
         using var doc = await JsonDocument.ParseAsync(
             await response.Content.ReadAsStreamAsync()
@@ -135,7 +136,7 @@ internal class AzureSearchExamples
         {
             sb.AppendLine($"--- Document {idx} ---");
             sb.AppendLine($"**Title:** {r.Title}");
-            sb.AppendLine($"**ID:** {r.Id}");
+            sb.AppendLine($"**Chunk ID:** {r.Id}");
             sb.AppendLine($"**Content type:** {r.ContentType}");
             sb.AppendLine($"**Tags:** {r.Tags}");
             sb.AppendLine($"**Date:** {r.Date}");
