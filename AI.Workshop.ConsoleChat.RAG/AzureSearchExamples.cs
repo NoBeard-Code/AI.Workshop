@@ -1,8 +1,11 @@
 ﻿using Azure;
 using Azure.AI.OpenAI;
+using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
+using Azure.Search.Documents.Models;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -182,21 +185,78 @@ internal class AzureSearchExamples
         return Array.Empty<string>();
     }
 
-    internal async Task SearchVectorIndexAsync(string query)
+    internal async Task SearchIndexAsync(string text, string indexName)
     {
-        var embedding = await _generator.GenerateAsync(query);
+        var embedding = await _generator.GenerateAsync(text);
 
         var embeddingResult = embedding.Vector.ToArray();
 
-        var searchQuery = new
+        var query = new
         {
-            QueryText = query,
+            QueryText = text,
             Vector = embeddingResult,
-            IndexName = "inhalt-index"
+            IndexName = indexName,
+            TopK = 5,
+            VectorBoost = 1.0f
         };
 
-        var searchClient = _searchIndexClient.GetSearchClient("inhalt-index");
+        var searchClient = _searchIndexClient.GetSearchClient(indexName);
 
+        var searchOptions = new SearchOptions
+        {
+            Size = query.TopK,
+            Select = { "id", "title", "searchable_content", "summary", "url", "date", "content_type", "tags", "word_count" },
+            IncludeTotalCount = true,
+        };
+
+        searchOptions.VectorSearch = new()
+        {
+            Queries = {
+                new VectorizedQuery(query.Vector)
+                {
+                    Fields = { "embedding" },
+                    KNearestNeighborsCount = query.TopK,
+                    Weight = query.VectorBoost,
+                    Exhaustive = true,
+                }
+            }
+        };
+
+        SearchResults<SearchDocument> response = await searchClient.SearchAsync<SearchDocument>(query.QueryText, searchOptions);
+
+        if (response.SemanticSearch?.Answers?.Count > 0) // later, if we implement semantic search answers
+        {
+            Console.WriteLine("Query Answers:");
+            foreach (QueryAnswerResult answer in response.SemanticSearch.Answers)
+            {
+                Console.WriteLine($"Answer Highlights: {answer.Highlights}");
+                Console.WriteLine($"Answer Text: {answer.Text}");
+            }
+        }
+
+        var sb = new StringBuilder();
+        sb.AppendLine("Context from documents in the database:\n");
+
+        var idx = 1;
+        await foreach (var result in response.GetResultsAsync())
+        {
+            sb.AppendLine($"--- Document {idx} ---");
+            sb.AppendLine($"**Title:** {result.Document["title"]}");
+            sb.AppendLine($"**ID:** {result.Document["id"]}");
+            sb.AppendLine($"**Content type:** {result.Document["content_type"]}");
+            sb.AppendLine($"**Tags:** {result.Document["tags"]}");
+            sb.AppendLine($"**Url:** {result.Document["url"]}");
+            sb.AppendLine($"**Score:** {result.Score:F3}");
+            sb.AppendLine();
+            sb.AppendLine($"{result.Document["searchable_content"]}");
+            sb.AppendLine();
+            idx++;
+        }
+
+        sb.AppendLine("--- User Query ---");
+        sb.AppendLine();
+        sb.AppendLine(text);
+
+        Console.WriteLine(sb.ToString());
     }
-
 }
