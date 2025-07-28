@@ -211,8 +211,8 @@ internal class RagWorkflowExamples
         Console.ResetColor();
 
         AddToolDefinition("CurrentTimeToolPrompts", new CurrentTimeTool() as ISearchChatTool);
-        AddToolDefinition("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool(_innerClient, _configuration) as ISearchChatTool);
-        AddToolDefinition("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool(_innerClient, _configuration) as ISearchChatTool);
+        AddToolDefinition("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool(_innerClient, _configuration));
+        AddToolDefinition("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool(_innerClient, _configuration));
 
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine($"\nQ: {userPrompt}");
