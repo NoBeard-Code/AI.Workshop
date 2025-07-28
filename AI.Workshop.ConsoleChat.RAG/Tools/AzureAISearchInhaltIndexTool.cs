@@ -16,7 +16,7 @@ internal class AzureAISearchInhaltIndexTool(AzureOpenAIClient client, IConfigura
     }
 
     [Description("This tool searches through Azure AISearch index of available seminars to help you recommend a seminar to the user.")]
-    public async Task<string> InvokeFixedAsync(
+    public async Task<string> SearchDocumentsWithQueryAndTop(
         [Description("The query to search for in the Azure Search index and get seminar with semantically similar description.")]
         string query,
         [Description("The number of seminars you wish to retrieve from the search index.")]

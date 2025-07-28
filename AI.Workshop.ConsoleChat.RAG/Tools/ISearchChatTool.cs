@@ -2,5 +2,5 @@
 
 internal interface ISearchChatTool
 {
-    Task<string> InvokeFixedAsync(string query, int top = 5, CancellationToken ct = default);
+    Task<string> SearchDocumentsWithQueryAndTop(string query, int top = 5, CancellationToken ct = default);
 }

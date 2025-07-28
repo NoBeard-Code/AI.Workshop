@@ -210,6 +210,8 @@ internal class RagWorkflowExamples
         Console.WriteLine(_systemPrompt);
         Console.ResetColor();
 
+        //history.Add(new(ChatRole.Assistant, "“Tools must be invoked using all relevant user intent. Parameters for tool methods are inferred from semantic labels and descriptions.”"));
+
         var summary = AggregateHistoryToString(history);
 
         AddToolDefinitionFixed("CurrentTimeToolPrompts", new CurrentTimeTool());
@@ -220,7 +222,6 @@ internal class RagWorkflowExamples
         Console.WriteLine($"\nQ: {userPrompt}");
         history.Add(new(ChatRole.User, userPrompt));
         
-
         var streamingResponse = clientBuilder.GetStreamingResponseAsync(history, _chatOptions);
 
         var messageBuilder = new StringBuilder();
@@ -308,14 +309,60 @@ internal class RagWorkflowExamples
             throw new ArgumentException($"Tool definition section '{sectionName}' not found in configuration.");
         }
 
+        //var schema = BinaryData.FromString("""
+        //{
+        //    "type": "object",
+        //    "properties": {
+        //        "Movies": {
+        //            "type": "array",
+        //            "items": {
+        //                "type": "object",
+        //                "properties": {
+        //                    "Title": { "type": "string" },
+        //                    "Director": { "type": "string" },
+        //                    "ReleaseYear": { "type": "integer" },
+        //                    "Rating": { "type": "number" },
+        //                    "IsAvailableOnStreaming": { "type": "boolean" },
+        //                    "Tags": { "type": "array", "items": { "type": "string" } }
+        //                },
+        //                "required": ["Title", "Director", "ReleaseYear", "Rating", "IsAvailableOnStreaming", "Tags"],
+        //                "additionalProperties": false
+        //            }
+        //        }
+        //    },
+        //    "required": ["Movies"],
+        //    "additionalProperties": false
+        //}
+        //""");
+
         var factoryOptions = new AIFunctionFactoryOptions
         {
             Name = section["Name"],
-            Description = string.Join("", section.GetSection("Description").GetChildren().Select(x => x.Value))
+            Description = string.Join("", section.GetSection("Description").GetChildren().Select(x => x.Value)),
+            //ConfigureParameterBinding = (parameter) =>
+            //{
+            //    var options = new ParameterBindingOptions
+            //    {
+            //        BindParameter = (param, context) =>
+            //        {
+            //            if (param.Name == "query")
+            //            {
+            //                return context.GetValueOrDefault("query") ?? "default query";
+            //            }
+            //            else if (param.Name == "top")
+            //            {
+            //                return context.GetValueOrDefault("top") ?? 5;
+            //            }
+            //            return null;
+            //        },
+            //    };
+
+            //    return options;
+            //},
         };
 
         var aiFunction = AIFunctionFactory.Create(
-            method: tool.InvokeFixedAsync,
+            method: tool.SearchDocumentsWithQueryAndTop,
             factoryOptions);
 
         //tool.InvokeAsync(new AIFunctionArguments {

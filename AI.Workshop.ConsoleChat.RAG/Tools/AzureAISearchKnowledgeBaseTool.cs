@@ -16,7 +16,7 @@ internal class AzureAISearchKnowledgeBaseTool(AzureOpenAIClient client, IConfigu
     }
 
     [Description("This tool searches through Azure AISearch Knowledge base index to find relevant context information to help answer user query.")]
-    public async Task<string> InvokeFixedAsync(
+    public async Task<string> SearchDocumentsWithQueryAndTop(
         [Description("The query to search for in the Azure Search Knowledge base index.")]
         string query,
         [Description("The number of documents you wish to retrieve from the search index.")]
