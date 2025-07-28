@@ -32,7 +32,7 @@ internal abstract class AzureSearchToolBase
 
     public async Task<string> InvokeAsync(string query, int top, string indexName, CancellationToken ct = default)
     {
-        //query = _query;
+        if (_query != null) query = _query;
 
         var embedding = await _generator.GenerateAsync(query, cancellationToken: ct);
 

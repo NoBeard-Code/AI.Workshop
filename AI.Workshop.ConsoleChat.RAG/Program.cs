@@ -32,4 +32,5 @@ var workflow = new RagWorkflowExamples();
 //await workflow.RagWithBasicToolAsync();
 //await workflow.RagWithToolDefinitionsAsync();
 await workflow.RagWithSearchToolsByDefaultAsync(userPrompt);
+//await workflow.RagWithSearchToolsCustomizedAsync(userPrompt);
 

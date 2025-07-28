@@ -246,7 +246,7 @@ internal class RagWorkflowExamples
         Console.ResetColor();
     }
 
-    internal async Task RagWithSearchToolsAsync(string userPrompt)
+    internal async Task RagWithSearchToolsCustomizedAsync(string userPrompt)
     {
         var clientBuilder = new ChatClientBuilder(_client)
             .UseFunctionInvocation()
@@ -258,13 +258,13 @@ internal class RagWorkflowExamples
         Console.WriteLine(_systemPrompt);
         Console.ResetColor();
 
-        //history.Add(new(ChatRole.Assistant, "“Tools must be invoked using all relevant user intent. Parameters for tool methods are inferred from semantic labels and descriptions.”"));
+        history.Add(new(ChatRole.Assistant, "“Tools must be invoked using all relevant user intent. Parameters for tool methods are inferred from semantic labels and descriptions.”"));
 
         var summary = AggregateHistoryToString(history);
 
-        AddToolDefinitionFixed("CurrentTimeToolPrompts", new CurrentTimeTool());
-        AddToolDefinitionFixed("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool(_innerClient, _configuration));
-        AddToolDefinitionFixed("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool(_innerClient, _configuration));
+        AddToolDefinition("CurrentTimeToolPrompts", new CurrentTimeTool() as ISearchChatTool);
+        AddToolDefinition("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool(_innerClient, _configuration, summary));
+        AddToolDefinition("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool(_innerClient, _configuration, summary));
 
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine($"\nQ: {userPrompt}");
