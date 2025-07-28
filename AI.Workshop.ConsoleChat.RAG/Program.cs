@@ -9,7 +9,7 @@ Console.WriteLine("Welcome to the AI Workshop Console Chat RAG examples!\r\n");
 
 var userPrompt = "I'm testing. Fetch me one article from your knowledge base, a seminar from inhalt index and tell me the current time.";
 
-var azSearch = new AzureSearchExamples();
+//var azSearch = new AzureSearchExamples();
 
 //await azSearch.GenerateEmbeddingForQueryAsync(userPrompt);
 //await azSearch.SearchVectorIndexAsync(userPrompt);
@@ -31,5 +31,5 @@ var workflow = new RagWorkflowExamples();
 //await workflow.InitialMessageLoopAsync();
 //await workflow.RagWithBasicToolAsync();
 //await workflow.RagWithToolDefinitionsAsync();
-await workflow.RagWithSearchToolsAsync(userPrompt);
+await workflow.RagWithSearchToolsByDefaultAsync(userPrompt);
 

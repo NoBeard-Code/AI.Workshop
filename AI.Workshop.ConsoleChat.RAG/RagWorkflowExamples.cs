@@ -162,7 +162,7 @@ internal class RagWorkflowExamples
         Console.WriteLine(_systemPrompt);
         Console.ResetColor();
 
-        AddToolDefinition("CurrentTimeToolPrompts", new CurrentTimeTool());
+        AddToolDefinition("CurrentTimeToolPrompts", new CurrentTimeTool() as IChatTool);
         AddToolDefinition("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexToolMock()); 
         AddToolDefinition("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseToolMock());
 
@@ -198,6 +198,54 @@ internal class RagWorkflowExamples
         }
     }
 
+    internal async Task RagWithSearchToolsByDefaultAsync(string userPrompt)
+    {
+        var clientBuilder = new ChatClientBuilder(_client)
+            .UseFunctionInvocation()
+            .Build();
+
+        List<ChatMessage> history = [new(ChatRole.System, _systemPrompt)];
+
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine(_systemPrompt);
+        Console.ResetColor();
+
+        AddToolDefinition("CurrentTimeToolPrompts", new CurrentTimeTool() as ISearchChatTool);
+        AddToolDefinition("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool(_innerClient, _configuration) as ISearchChatTool);
+        AddToolDefinition("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool(_innerClient, _configuration) as ISearchChatTool);
+
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine($"\nQ: {userPrompt}");
+        history.Add(new(ChatRole.User, userPrompt));
+        
+        var streamingResponse = clientBuilder.GetStreamingResponseAsync(history, _chatOptions);
+
+        var messageBuilder = new StringBuilder();
+        await foreach (var update in streamingResponse)
+        {
+            if (update.FinishReason == ChatFinishReason.ToolCalls)
+            {
+                foreach (var functionCall in update.Contents.OfType<FunctionCallContent>())
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"\nTool Call: {functionCall.Name}");
+
+                    var parameters = functionCall.Arguments;
+                    var json = JsonSerializer.Serialize(parameters, new JsonSerializerOptions { WriteIndented = true });
+                    Console.WriteLine(json);
+                    Console.ResetColor();
+                }
+            }
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(update.Text);
+            messageBuilder.Append(update.Text);
+        }
+
+        history.Add(new(ChatRole.Assistant, messageBuilder.ToString()));
+        Console.ResetColor();
+    }
+
     internal async Task RagWithSearchToolsAsync(string userPrompt)
     {
         var clientBuilder = new ChatClientBuilder(_client)
@@ -215,13 +263,13 @@ internal class RagWorkflowExamples
         var summary = AggregateHistoryToString(history);
 
         AddToolDefinitionFixed("CurrentTimeToolPrompts", new CurrentTimeTool());
-        AddToolDefinitionFixed("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool(_innerClient, _configuration, summary));
-        AddToolDefinitionFixed("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool(_innerClient, _configuration, summary));
+        AddToolDefinitionFixed("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool(_innerClient, _configuration));
+        AddToolDefinitionFixed("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool(_innerClient, _configuration));
 
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine($"\nQ: {userPrompt}");
         history.Add(new(ChatRole.User, userPrompt));
-        
+
         var streamingResponse = clientBuilder.GetStreamingResponseAsync(history, _chatOptions);
 
         var messageBuilder = new StringBuilder();
@@ -233,6 +281,15 @@ internal class RagWorkflowExamples
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine($"\nTool Call: {functionCall.Name}");
+
+                    //functionCall.Arguments.TryGetValue("query", out var query);
+                    //query = summary ?? query?.ToString();
+                    //functionCall.Arguments.TryGetValue("top", out var top);
+                    //top = 5;
+
+                    //functionCall.Arguments!["query"] = summary;
+                    //functionCall.Arguments["top"] = 5;
+
                     var parameters = functionCall.Arguments;
                     var json = JsonSerializer.Serialize(parameters, new JsonSerializerOptions { WriteIndented = true });
                     Console.WriteLine(json);
@@ -276,25 +333,47 @@ internal class RagWorkflowExamples
             Description = string.Join("", section.GetSection("Description").GetChildren().Select(x => x.Value))
         };
 
-        Dictionary<string, object> parameters = [];
+        //Dictionary<string, object> parameters = [];
 
-        var queryParameter = section.GetSection("queryParameterDescription").GetChildren();
+        //var queryParameter = section.GetSection("queryParameterDescription").GetChildren();
 
-        if (queryParameter.Any())
-        {
-            parameters.Add("query", string.Join("", queryParameter.Select(x => x.Value)));
-        }
+        //if (queryParameter.Any())
+        //{
+        //    parameters.Add("query", string.Join("", queryParameter.Select(x => x.Value)));
+        //}
         
-        var topParameter = section.GetSection("topParameterDescription").GetChildren();
+        //var topParameter = section.GetSection("topParameterDescription").GetChildren();
 
-        if (topParameter.Any()) {
-            parameters.Add("top", string.Join("", topParameter.Select(x => x.Value)));
-        }
+        //if (topParameter.Any()) {
+        //    parameters.Add("top", string.Join("", topParameter.Select(x => x.Value)));
+        //}
 
-        factoryOptions.AdditionalProperties = parameters;
+        //factoryOptions.AdditionalProperties = parameters;
 
         var aiFunction = AIFunctionFactory.Create(
             method: tool.InvokeAsync,
+            factoryOptions);
+
+        _chatOptions.Tools!.Add(aiFunction);
+    }
+
+    private void AddToolDefinition(string sectionName, ISearchChatTool tool)
+    {
+        var section = _configuration.GetSection(sectionName);
+
+        if (section == null || !section.Exists())
+        {
+            throw new ArgumentException($"Tool definition section '{sectionName}' not found in configuration.");
+        }
+
+        var factoryOptions = new AIFunctionFactoryOptions
+        {
+            Name = section["Name"],
+            Description = string.Join("", section.GetSection("Description").GetChildren().Select(x => x.Value))
+        };
+
+        var aiFunction = AIFunctionFactory.Create(
+            method: tool.SearchDocumentsWithQueryAndTop,
             factoryOptions);
 
         _chatOptions.Tools!.Add(aiFunction);

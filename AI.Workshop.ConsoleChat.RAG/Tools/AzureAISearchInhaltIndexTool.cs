@@ -9,8 +9,8 @@ internal class AzureAISearchInhaltIndexTool(AzureOpenAIClient client, IConfigura
 {
     public async Task<string> InvokeAsync(IDictionary<string, object> parameters = null, CancellationToken ct = default)
     {
-        if (!parameters.TryGetValue("query", out var qObj) || qObj is not string query)
-            throw new ArgumentException($"Missing or invalid query parameter.");
+        //if (!parameters.TryGetValue("query", out var qObj) || qObj is not string query)
+        //    throw new ArgumentException($"Missing or invalid query parameter.");
 
         return await InvokeAsync(query, 5, "inhalt-index", ct);
     }
@@ -26,6 +26,6 @@ internal class AzureAISearchInhaltIndexTool(AzureOpenAIClient client, IConfigura
         //if (!parameters.TryGetValue("query", out var qObj) || qObj is not string query)
         //    throw new ArgumentException($"Missing or invalid query parameter.");
 
-        return await base.InvokeAsync(query, top, "inhalt-index", ct);
+        return await base.InvokeAsync(query, 5, "inhalt-index", ct);
     }
 }

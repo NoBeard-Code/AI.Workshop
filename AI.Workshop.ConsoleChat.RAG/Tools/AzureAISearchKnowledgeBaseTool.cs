@@ -4,13 +4,13 @@ using System.ComponentModel;
 
 namespace AI.Workshop.ConsoleChat.RAG.Tools;
 
-internal class AzureAISearchKnowledgeBaseTool(AzureOpenAIClient client, IConfigurationRoot config, string query = "")
+internal class AzureAISearchKnowledgeBaseTool(AzureOpenAIClient client, IConfigurationRoot config, string query = null)
     : AzureSearchToolBase(client, config, query), IChatTool, ISearchChatTool
 {
     public async Task<string> InvokeAsync(IDictionary<string, object> parameters = null, CancellationToken ct = default)
     {
-        if (!parameters.TryGetValue("query", out var qObj) || qObj is not string query)
-            throw new ArgumentException($"Missing or invalid query parameter.");
+        //if (!parameters.TryGetValue("query", out var qObj) || qObj is not string query)
+        //    throw new ArgumentException($"Missing or invalid query parameter.");
 
         return await InvokeAsync(query, 5, "knowledge-base", ct);
     }
@@ -26,6 +26,6 @@ internal class AzureAISearchKnowledgeBaseTool(AzureOpenAIClient client, IConfigu
         //if (!parameters.TryGetValue("query", out var qObj) || qObj is not string query)
         //    throw new ArgumentException($"Missing or invalid query parameter.");
 
-        return await base.InvokeAsync(query, top, "knowledge-base", ct);
+        return await base.InvokeAsync(query, 5, "knowledge-base", ct);
     }
 }
