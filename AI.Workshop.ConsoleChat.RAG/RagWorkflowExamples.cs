@@ -210,13 +210,16 @@ internal class RagWorkflowExamples
         Console.WriteLine(_systemPrompt);
         Console.ResetColor();
 
-        AddToolDefinition("CurrentTimeToolPrompts", new CurrentTimeTool());
-        AddToolDefinition("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool(_innerClient, _configuration));
-        AddToolDefinition("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool(_innerClient, _configuration));
+        var summary = AggregateHistoryToString(history);
+
+        AddToolDefinitionFixed("CurrentTimeToolPrompts", new CurrentTimeTool());
+        AddToolDefinitionFixed("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool(_innerClient, _configuration, summary));
+        AddToolDefinitionFixed("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool(_innerClient, _configuration, summary));
 
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine($"\nQ: {userPrompt}");
         history.Add(new(ChatRole.User, userPrompt));
+        
 
         var streamingResponse = clientBuilder.GetStreamingResponseAsync(history, _chatOptions);
 
@@ -243,6 +246,18 @@ internal class RagWorkflowExamples
 
         history.Add(new(ChatRole.Assistant, messageBuilder.ToString()));
         Console.ResetColor();
+    }
+
+    private static string AggregateHistoryToString(List<ChatMessage> history)
+    {
+        var sb = new StringBuilder();
+
+        foreach (var message in history)
+        {
+            sb.AppendLine($"[{message.Role}] {message.Text}");
+        }
+
+        return sb.ToString();
     }
 
     private void AddToolDefinition(string sectionName, IChatTool tool)
@@ -279,6 +294,28 @@ internal class RagWorkflowExamples
 
         var aiFunction = AIFunctionFactory.Create(
             method: tool.InvokeAsync,
+            factoryOptions);
+
+        _chatOptions.Tools!.Add(aiFunction);
+    }
+
+    private void AddToolDefinitionFixed(string sectionName, ISearchChatTool tool)
+    {
+        var section = _configuration.GetSection(sectionName);
+
+        if (section == null || !section.Exists())
+        {
+            throw new ArgumentException($"Tool definition section '{sectionName}' not found in configuration.");
+        }
+
+        var factoryOptions = new AIFunctionFactoryOptions
+        {
+            Name = section["Name"],
+            Description = string.Join("", section.GetSection("Description").GetChildren().Select(x => x.Value))
+        };
+
+        var aiFunction = AIFunctionFactory.Create(
+            method: tool.InvokeFixedAsync,
             factoryOptions);
 
         //tool.InvokeAsync(new AIFunctionArguments {

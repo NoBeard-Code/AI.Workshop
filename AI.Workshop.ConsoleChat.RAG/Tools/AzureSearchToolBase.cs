@@ -13,9 +13,12 @@ internal abstract class AzureSearchToolBase
 {
     private protected readonly IEmbeddingGenerator<string, Embedding<float>> _generator;
     private protected readonly SearchIndexClient _searchIndexClient;
+    private protected readonly string _query;
 
-    protected AzureSearchToolBase(AzureOpenAIClient client, IConfigurationRoot config)
+    protected AzureSearchToolBase(AzureOpenAIClient client, IConfigurationRoot config, string query)
     {
+        _query = query;
+
         var deployment = config["AZURE_EMBEDDING_DEPLOYMENT"];
         var searchEndpoint = config["AZURE_SEARCH_ENDPOINT"];
         var searchKey = config["AZURE_SEARCH_KEY"];
@@ -27,8 +30,10 @@ internal abstract class AzureSearchToolBase
         _searchIndexClient = new SearchIndexClient(new Uri(searchEndpoint), new AzureKeyCredential(searchKey));
     }
 
-    public async Task<string> InvokeAsync(string query, string indexName, CancellationToken ct = default)
+    public async Task<string> InvokeAsync(string query, int top, string indexName, CancellationToken ct = default)
     {
+        query = _query;
+
         var embedding = await _generator.GenerateAsync(query, cancellationToken: ct);
 
         var embeddingResult = embedding.Vector.ToArray();
@@ -38,7 +43,7 @@ internal abstract class AzureSearchToolBase
             QueryText = query,
             Vector = embeddingResult,
             IndexName = indexName,
-            TopK = 5,
+            TopK = top,
             VectorBoost = 1.0f
         };
 
