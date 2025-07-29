@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.BlazorChat", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.ConsoleChat.ContentSafety", "AI.Workshop.ConsoleChat.ContentSafety\AI.Workshop.ConsoleChat.ContentSafety.csproj", "{F15DAC86-5D2A-4DC3-8BC0-B9841ED5B818}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.ChatWebApp", "AI.Workshop.ChatWebApp\AI.Workshop.ChatWebApp.csproj", "{7ED0E585-C363-61C0-0688-D7B13527202C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F15DAC86-5D2A-4DC3-8BC0-B9841ED5B818}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F15DAC86-5D2A-4DC3-8BC0-B9841ED5B818}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F15DAC86-5D2A-4DC3-8BC0-B9841ED5B818}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ED0E585-C363-61C0-0688-D7B13527202C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ED0E585-C363-61C0-0688-D7B13527202C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ED0E585-C363-61C0-0688-D7B13527202C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ED0E585-C363-61C0-0688-D7B13527202C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
