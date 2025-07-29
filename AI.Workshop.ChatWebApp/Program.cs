@@ -15,8 +15,6 @@ var openAiEndpoint = builder.Configuration["AZURE_OPENAI_ENDPOINT"];
 var openAiKey = builder.Configuration["AZURE_OPENAI_KEY"];
 var deployment = builder.Configuration["AZURE_OPENAI_DEPLOYMENT"];
 var embeddingDeployment = builder.Configuration["AZURE_EMBEDDING_DEPLOYMENT"];
-var searchEndpoint = builder.Configuration["AZURE_SEARCH_ENDPOINT"];
-var searchKey = builder.Configuration["AZURE_SEARCH_KEY"];
 
 var azureOpenAi = new AzureOpenAIClient(new Uri(openAiEndpoint), new ApiKeyCredential(openAiKey));
 

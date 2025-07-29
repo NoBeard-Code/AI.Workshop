@@ -1,8 +1,11 @@
 ﻿@page "/"
 
 @using System.ComponentModel
+@using AI.Workshop.ChatWebApp.Tools
 
 @inject IChatClient ChatClient
+@inject IEmbeddingGenerator<string, Embedding<float>> EmbeddingGenerator
+
 @inject NavigationManager Nav
 @inject SemanticSearch Search
 @inject IConfiguration Configuration
@@ -53,7 +56,33 @@
 
         messages.Add(new(ChatRole.System, SystemPrompt));
 
+        AddToolDefinition("CurrentTimeToolPrompts", new CurrentTimeTool());
+        AddToolDefinition("AzureAISearchInhaltIndexToolPrompts", new AzureAISearchInhaltIndexTool(EmbeddingGenerator, Configuration));
+        AddToolDefinition("AzureAISearchKnowledgeBaseToolPrompts", new AzureAISearchKnowledgeBaseTool(EmbeddingGenerator, Configuration));
+
         //chatOptions.Tools = [AIFunctionFactory.Create(SearchAsync)];
+    }
+
+    private void AddToolDefinition(string sectionName, IChatTool tool)
+    {
+        var section = Configuration.GetSection(sectionName);
+
+        if (section == null || !section.Exists())
+        {
+            throw new ArgumentException($"Tool definition section '{sectionName}' not found in configuration.");
+        }
+
+        var factoryOptions = new AIFunctionFactoryOptions
+        {
+            Name = section["Name"],
+            Description = string.Join("", section.GetSection("Description").GetChildren().Select(x => x.Value))
+        };
+
+        var aiFunction = AIFunctionFactory.Create(
+            method: tool.SearchDocumentsWithQueryAndTop,
+            factoryOptions);
+
+        chatOptions.Tools!.Add(aiFunction);
     }
 
     private async Task AddUserMessageAsync(ChatMessage userMessage)
