@@ -1,8 +1,12 @@
 ﻿@page "/"
+
 @using System.ComponentModel
+
 @inject IChatClient ChatClient
 @inject NavigationManager Nav
 @inject SemanticSearch Search
+@inject IConfiguration Configuration
+
 @implements IDisposable
 
 <PageTitle>Chat</PageTitle>
@@ -11,10 +15,10 @@
 
 <ChatMessageList Messages="@messages" InProgressMessage="@currentResponseMessage">
     <NoMessagesContent>
-        <div>To get started, try asking about these example documents. You can replace these with your own data and replace this message.</div>
-        <ChatCitation File="Example_Emergency_Survival_Kit.pdf"/>
+        <div>To get started, try asking about IFB seminars and articles from our knowledge base.</div>
+@*         <ChatCitation File="Example_Emergency_Survival_Kit.pdf"/>
         <ChatCitation File="Example_GPS_Watch.pdf"/>
-    </NoMessagesContent>
+ *@    </NoMessagesContent>
 </ChatMessageList>
 
 <div class="chat-container">
@@ -23,23 +27,19 @@
 </div>
 
 @code {
-    private const string SystemPrompt = @"
-        You are an assistant who answers questions about information you retrieve.
-        Do not answer questions about anything else.
-        Use only simple markdown to format your responses.
+    private string SystemPrompt = string.Empty;
 
-        Use the search tool to find relevant information. When you do this, end your
-        reply with citations in the special XML format:
+    private readonly ChatOptions chatOptions = new()
+    {
+        Temperature = 0.2f,
+        MaxOutputTokens = 1000,
+        FrequencyPenalty = 0.1f,
+        PresencePenalty = 0.0f,
+        TopP = 0.3f,
+        ToolMode = ChatToolMode.Auto,
+        Tools = []
+    };
 
-        <citation filename='string' page_number='number'>exact quote here</citation>
-
-        Always include the citation in your response if there are results.
-
-        The quote must be max 5 words, taken word-for-word from the search result, and is the basis for why the citation is relevant.
-        Don't refer to the presence of citations; just emit these tags right at the end, with no surrounding text.
-        ";
-
-    private readonly ChatOptions chatOptions = new();
     private readonly List<ChatMessage> messages = new();
     private CancellationTokenSource? currentResponseCancellation;
     private ChatMessage? currentResponseMessage;
@@ -48,8 +48,12 @@
 
     protected override void OnInitialized()
     {
+        var section = Configuration.GetSection("Prompts:OpenAISystemPrompt");
+        SystemPrompt = string.Join("", section.GetChildren().Select(x => x.Value));
+
         messages.Add(new(ChatRole.System, SystemPrompt));
-        chatOptions.Tools = [AIFunctionFactory.Create(SearchAsync)];
+
+        //chatOptions.Tools = [AIFunctionFactory.Create(SearchAsync)];
     }
 
     private async Task AddUserMessageAsync(ChatMessage userMessage)

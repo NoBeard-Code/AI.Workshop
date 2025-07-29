@@ -6,6 +6,8 @@ using System.ClientModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("Prompts.json", false, false);
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
