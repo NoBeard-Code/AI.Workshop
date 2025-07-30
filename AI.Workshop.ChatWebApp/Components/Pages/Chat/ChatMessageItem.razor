@@ -28,7 +28,7 @@ else if (Message.Role == ChatRole.Assistant)
 
                     @foreach (var citation in citations ?? [])
                     {
-                        <ChatCitation File="@citation.File" PageNumber="@citation.Page" Quote="@citation.Quote" />
+                        <ChatCitation Id="@citation.Id" Url="@citation.Url" Title="@citation.Title" />
                     }
                 </div>
             </div>
@@ -56,9 +56,9 @@ else if (Message.Role == ChatRole.Assistant)
 
 @code {
     private static readonly ConditionalWeakTable<ChatMessage, ChatMessageItem> SubscribersLookup = new();
-    private static readonly Regex CitationRegex = new(@"<citation filename='(?<file>[^']*)' page_number='(?<page>\d*)'>(?<quote>.*?)</citation>", RegexOptions.NonBacktracking);
+    private static readonly Regex CitationRegex = new(@"<citation id='(?<id>[^']*)' url='(?<url>[^']*)'>(?<title>.*?)</citation>", RegexOptions.NonBacktracking | RegexOptions.Compiled);
 
-    private List<(string File, int? Page, string Quote)>? citations;
+    private List<(string Id, string Url, string Title)>? citations;
 
     [Parameter, EditorRequired]
     public required ChatMessage Message { get; set; }
@@ -87,8 +87,12 @@ else if (Message.Role == ChatRole.Assistant)
     private void ParseCitations(string text)
     {
         var matches = CitationRegex.Matches(text);
+
         citations = matches.Any()
-            ? matches.Select(m => (m.Groups["file"].Value, int.TryParse(m.Groups["page"].Value, out var page) ? page : (int?)null, m.Groups["quote"].Value)).ToList()
-            : null;
+            ? matches.Select(m => (
+                m.Groups["id"].Value,
+                m.Groups["url"].Value,
+                m.Groups["title"].Value
+            )).ToList() : null;
     }
 }
