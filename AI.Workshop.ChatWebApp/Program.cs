@@ -1,7 +1,9 @@
 using AI.Workshop.ChatWebApp.Components;
-using AI.Workshop.ChatWebApp.Services;
 using Azure.AI.OpenAI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using System.ClientModel;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,10 +27,13 @@ var chatClient = azureOpenAi
 var embeddingGenerator = azureOpenAi.GetEmbeddingClient(embeddingDeployment)
     .AsIEmbeddingGenerator();
 
-builder.Services.AddSingleton<SemanticSearch>();
+var cache = new MemoryDistributedCache(
+    Options.Create(new MemoryDistributedCacheOptions())
+    );
 
 builder.Services.AddChatClient(chatClient)
     .UseFunctionInvocation()
+    .UseDistributedCache(cache)
     .UseLogging();
 
 builder.Services.AddEmbeddingGenerator(embeddingGenerator);
