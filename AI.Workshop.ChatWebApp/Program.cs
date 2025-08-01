@@ -1,5 +1,7 @@
 using AI.Workshop.ChatWebApp.Components;
 using AI.Workshop.ChatWebApp.Middleware;
+using Azure;
+using Azure.AI.ContentSafety;
 using Azure.AI.OpenAI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Caching.Distributed;
@@ -39,10 +41,17 @@ var limiter = new ConcurrencyLimiter(new()
     QueueLimit = int.MaxValue // No limit on the queue size
 });
 
+var contentSafetyEndpoint = builder.Configuration["AZURE_CONTENT_SAFETY_ENDPOINT"];
+var contentSafetyKey = builder.Configuration["AZURE_CONTENT_SAFETY_KEY"];
+
+var contentSafetyClient = new ContentSafetyClient(
+    new Uri(contentSafetyEndpoint), new AzureKeyCredential(contentSafetyKey));
+
 builder.Services.AddChatClient(chatClient)
     .UseFunctionInvocation()
     .UseDistributedCache(cache)
     .UseRateLimiting(limiter)
+    .UseContentSafety(contentSafetyClient)
     .UseLogging();
 
 builder.Services.AddEmbeddingGenerator(embeddingGenerator);
