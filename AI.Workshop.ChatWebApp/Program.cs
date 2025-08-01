@@ -1,10 +1,12 @@
 using AI.Workshop.ChatWebApp.Components;
+using AI.Workshop.ChatWebApp.Middleware;
 using Azure.AI.OpenAI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System.ClientModel;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,9 +33,16 @@ var cache = new MemoryDistributedCache(
     Options.Create(new MemoryDistributedCacheOptions())
     );
 
+var limiter = new ConcurrencyLimiter(new()
+{
+    PermitLimit = 1, // Limit to one concurrent request
+    QueueLimit = int.MaxValue // No limit on the queue size
+});
+
 builder.Services.AddChatClient(chatClient)
     .UseFunctionInvocation()
     .UseDistributedCache(cache)
+    .UseRateLimiting(limiter)
     .UseLogging();
 
 builder.Services.AddEmbeddingGenerator(embeddingGenerator);
