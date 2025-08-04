@@ -1,12 +1,13 @@
 ﻿using Microsoft.Extensions.AI;
 using Microsoft.Extensions.VectorData;
 using Microsoft.SemanticKernel.Connectors.InMemory;
+using System.ComponentModel;
 
 namespace AI.Workshop.VectorStore;
 
-public class DataIngestor(IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator)
+public class InMemoryStore(IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator)
 {
-    private InMemoryCollection<int, VectorModel> _inMemoryVectorStore;
+    private static InMemoryCollection<int, VectorModel> _inMemoryVectorStore;
 
     public async Task IngestDataAsync()
     {
@@ -27,6 +28,8 @@ public class DataIngestor(IEmbeddingGenerator<string, Embedding<float>> embeddin
 
         var results = _inMemoryVectorStore.SearchAsync(queryEmbedding, top: numberOfResults);
 
+        Console.ForegroundColor = ConsoleColor.Green;
+
         await foreach (var result in results)
         {
             Console.WriteLine($"Name: {result.Record.Name}");
@@ -34,5 +37,16 @@ public class DataIngestor(IEmbeddingGenerator<string, Embedding<float>> embeddin
             Console.WriteLine($"Vector match score: {result.Score}");
             yield return result;
         }
+
+        Console.ResetColor();
+    }
+
+    [Description("Searches for information about Azure services using a phrase or keyword")]
+    public async Task<IEnumerable<VectorModel>> SearchToolAsync(
+    [Description("The phrase to search for.")] string searchPhrase,
+    [Description("If possible, specify number of results. If not provided or empty, the search returns the first result only.")] int numberOfResults = 1)
+    {
+        var nearest = SearchAsync(searchPhrase, numberOfResults);
+        return await nearest.Select(result => result.Record).ToListAsync();
     }
 }
