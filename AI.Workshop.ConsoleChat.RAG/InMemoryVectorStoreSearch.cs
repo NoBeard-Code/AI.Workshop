@@ -1,4 +1,5 @@
-﻿using Azure;
+﻿using AI.Workshop.VectorStore;
+using Azure;
 using Azure.AI.OpenAI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
@@ -38,7 +39,7 @@ internal class InMemoryVectorStoreSearch
         _cloudServicesStore = vectorStore.GetCollection<int, VectorModel>("cloudServices");
         await _cloudServicesStore.EnsureCollectionExistsAsync();
 
-        foreach (var service in Data.CloudServices)
+        foreach (var service in SampleData.CloudServices)
         {
             service.Vector = await _generator.GenerateVectorAsync(service.Description);
             await _cloudServicesStore.UpsertAsync(service);

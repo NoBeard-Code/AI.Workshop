@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.ChatWebApp", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.ConsoleChat.Ollama", "AI.Workshop.ConsoleChat.Ollama\AI.Workshop.ConsoleChat.Ollama.csproj", "{13E8DBCA-8D8F-4302-B166-7028A48A9EE0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.VectorStore", "AI.Workshop.VectorStore\AI.Workshop.VectorStore.csproj", "{B98C991C-4006-FC91-B3F1-437B932BD255}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{13E8DBCA-8D8F-4302-B166-7028A48A9EE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13E8DBCA-8D8F-4302-B166-7028A48A9EE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13E8DBCA-8D8F-4302-B166-7028A48A9EE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B98C991C-4006-FC91-B3F1-437B932BD255}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B98C991C-4006-FC91-B3F1-437B932BD255}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B98C991C-4006-FC91-B3F1-437B932BD255}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B98C991C-4006-FC91-B3F1-437B932BD255}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

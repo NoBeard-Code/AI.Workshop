@@ -19,6 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AI.Workshop.VectorStore\AI.Workshop.VectorStore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Prompts.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
