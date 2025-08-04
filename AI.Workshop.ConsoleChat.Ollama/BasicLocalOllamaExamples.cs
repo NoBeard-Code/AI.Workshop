@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.AI;
+﻿using AI.Workshop.VectorStore;
+using Microsoft.Extensions.AI;
 using OllamaSharp;
 using System.Text;
 
@@ -7,6 +8,7 @@ namespace AI.Workshop.ConsoleChat.Ollama;
 internal class BasicLocalOllamaExamples
 {
     private readonly IChatClient _chatClient;
+    private readonly OllamaEmbeddingGenerator _embeddingGenerator;
 
     public BasicLocalOllamaExamples()
     {
@@ -14,35 +16,14 @@ internal class BasicLocalOllamaExamples
         var ollamaModel = "llama3.2";
 
         _chatClient = new OllamaApiClient(ollamaUri, ollamaModel);
+
+        _embeddingGenerator = new OllamaEmbeddingGenerator(
+            endpoint: ollamaUri,
+            modelId: "all-minilm",
+            httpClient: new HttpClient());
     }
 
-    internal async Task BasicPromptAsync()
-    {
-        List<ChatMessage> chatHistory = new();
-
-        while (true)
-        {
-            // Get user prompt and add to chat history
-            Console.Write("Q: ");
-            var userPrompt = Console.ReadLine();
-            chatHistory.Add(new ChatMessage(ChatRole.User, userPrompt));
-
-            // Stream the AI response and add to chat history
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write("A: ");
-            var response = "";
-            await foreach (ChatResponseUpdate item in _chatClient.GetStreamingResponseAsync(chatHistory))
-            {
-                Console.Write(item.Text);
-                response += item.Text;
-            }
-            chatHistory.Add(new ChatMessage(ChatRole.Assistant, response));
-            Console.WriteLine();
-            Console.ResetColor();
-        }
-    }
-
-    internal async Task BasicPromptWithSystemMessageAsync()
+    internal async Task BasicPromptWithHistoryAsync()
     {
         var clientBuilder = new ChatClientBuilder(_chatClient)
             .Build();
@@ -88,4 +69,11 @@ internal class BasicLocalOllamaExamples
         }
     }
 
+    internal async Task BasicLocalStoreSearchAsync()
+    {
+        var dataIngestor = new DataIngestor(_embeddingGenerator);
+        await dataIngestor.IngestDataAsync();
+
+        await foreach (var result in dataIngestor.SearchAsync("Which Azure service should I use to store my Word documents?"));
+    }
 }
