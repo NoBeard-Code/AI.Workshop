@@ -8,6 +8,7 @@
 
   <ItemGroup>
 	<PackageReference Include="Microsoft.SemanticKernel.Core" Version="1.61.0" />
+	<PackageReference Include="Octokit" Version="14.0.0" />
 	<PackageReference Include="System.Linq.Async" Version="6.0.1" />
 	<PackageReference Include="Microsoft.Extensions.VectorData.Abstractions" Version="9.7.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.InMemory" Version="1.61.0-preview" />

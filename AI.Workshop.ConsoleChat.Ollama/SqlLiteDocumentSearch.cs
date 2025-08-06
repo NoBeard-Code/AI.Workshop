@@ -61,7 +61,7 @@ internal class SqlLiteDocumentSearch
         Console.WriteLine(systemPrompt);
         Console.ResetColor();
 
-        var dataIngestor = new DataIngestor(chunks, documents);
+        var dataIngestor = new DataIngestor(_embeddingGenerator, chunks, documents);
         await dataIngestor.IngestDataAsync(new PDFDirectorySource(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data")));
 
         var chatOptions = new ChatOptions

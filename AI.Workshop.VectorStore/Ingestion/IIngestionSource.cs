@@ -1,4 +1,6 @@
-﻿namespace AI.Workshop.VectorStore.Ingestion;
+﻿using Microsoft.Extensions.AI;
+
+namespace AI.Workshop.VectorStore.Ingestion;
 
 public interface IIngestionSource
 {
@@ -8,5 +10,5 @@ public interface IIngestionSource
 
     Task<IEnumerable<IngestedDocument>> GetDeletedDocumentsAsync(IReadOnlyList<IngestedDocument> existingDocuments);
 
-    Task<IEnumerable<IngestedChunk>> CreateChunksForDocumentAsync(IngestedDocument document);
+    Task<IEnumerable<IngestedChunk>> CreateChunksForDocumentAsync(IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator, IngestedDocument document);
 }

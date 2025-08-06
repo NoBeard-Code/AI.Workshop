@@ -1,6 +1,7 @@
-using Microsoft.Extensions.AI;
 using AI.Workshop.ChatApp.Web.Components;
 using AI.Workshop.VectorStore.Ingestion;
+using Microsoft.Extensions.AI;
+using Octokit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,9 @@ var vectorStoreConnectionString = $"Data Source={vectorStorePath}";
 
 builder.Services.AddSqliteCollection<string, IngestedChunk>("data-ai_workshop_chatapp-chunks", vectorStoreConnectionString);
 builder.Services.AddSqliteCollection<string, IngestedDocument>("data-ai_workshop_chatapp-documents", vectorStoreConnectionString);
+
+//builder.AddQdrantClient("vector-db");
+//builder.Services.AddSingleton<IIngestionSource, PDFDirectorySource>();
 
 builder.Services.AddScoped<DataIngestor>();
 builder.Services.AddSingleton<SemanticSearch>();
@@ -44,12 +48,18 @@ app.UseStaticFiles();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// By default, we ingest PDF files from the /wwwroot/Data directory. You can ingest from
-// other sources by implementing IIngestionSource.
-// Important: ensure that any content you ingest is trusted, as it may be reflected back
-// to users or could be a source of prompt injection risk.
+//await DataIngestor.IngestDataAsync(
+//    app.Services,
+//    new PDFDirectorySource(Path.Combine(builder.Environment.WebRootPath, "Data")));
+
+var gitHubKey = builder.Configuration["GITHUB_APIKEY"];
+var gitHubClient = new GitHubClient(new ProductHeaderValue("AI-Workshop.ChatApp.Web"))
+{
+    Credentials = new Credentials(gitHubKey)
+};
+
 await DataIngestor.IngestDataAsync(
     app.Services,
-    new PDFDirectorySource(Path.Combine(builder.Environment.WebRootPath, "Data")));
+    new GitHubMarkdownSource(gitHubClient, "dedalusmax", "dice-and-roll2", "/"));
 
 app.Run();

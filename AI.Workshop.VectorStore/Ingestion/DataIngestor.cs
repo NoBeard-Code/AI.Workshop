@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.VectorData;
 
 namespace AI.Workshop.VectorStore.Ingestion;
 
 public class DataIngestor(
+    IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator,
     VectorStoreCollection<string, IngestedChunk> chunksCollection,
     VectorStoreCollection<string, IngestedDocument> documentsCollection)
 {
@@ -38,7 +40,7 @@ public class DataIngestor(
 
             await documentsCollection.UpsertAsync(modifiedDocument);
 
-            var newRecords = await source.CreateChunksForDocumentAsync(modifiedDocument);
+            var newRecords = await source.CreateChunksForDocumentAsync(embeddingGenerator, modifiedDocument);
             await chunksCollection.UpsertAsync(newRecords);
         }
 
