@@ -2,7 +2,10 @@
 
 Console.WriteLine("Welcome to the AI Workshop Console Chat Ollama examples!\r\n");
 
-var ollama = new BasicLocalOllamaExamples();
-//await ollama.BasicPromptWithHistoryAsync();
-//await ollama.BasicLocalStoreSearchAsync();
-await ollama.BasicRagWithLocalStoreSearchAsync();
+//var search = new BasicLocalOllamaExamples();
+//await search.BasicPromptWithHistoryAsync();
+//await search.BasicLocalStoreSearchAsync();
+//await search.BasicRagWithLocalStoreSearchAsync();
+
+var search = new SqlLiteDocumentSearch();
+await search.BasicDocumentSearchAsync();    
