@@ -1,7 +1,6 @@
 using Microsoft.Extensions.AI;
 using AI.Workshop.ChatApp.Web.Components;
-using AI.Workshop.ChatApp.Web.Services;
-using AI.Workshop.ChatApp.Web.Services.Ingestion;
+using AI.Workshop.VectorStore.Ingestion;
 
 var builder = WebApplication.CreateBuilder(args);
 
