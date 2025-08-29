@@ -7,5 +7,10 @@ Console.WriteLine("Welcome to the AI Workshop Console Chat Ollama examples!\r\n"
 //await search.BasicLocalStoreSearchAsync();
 //await search.BasicRagWithLocalStoreSearchAsync();
 
-var search = new SqlLiteDocumentSearch();
-await search.BasicDocumentSearchAsync();    
+//var search = new SqlLiteDocumentSearch();
+//await search.BasicDocumentSearchAsync();    
+
+var search = new QdrantDocumentSearch();
+//await search.TestQdrantAsync();
+//await search.QdrantSetupAsync();
+await search.BasicDocumentSearchAsync();
