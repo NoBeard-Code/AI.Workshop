@@ -2,13 +2,18 @@
 
 namespace AI.Workshop.VectorStore.Ingestion;
 
-public class IngestedChunk
+public class IngestedChunk : IngestedChunk<string>
 {
-    private const int VectorDimensions = 384; // 384 is the default vector size for the all-minilm embedding model
-    private const string VectorDistanceFunction = DistanceFunction.CosineDistance;
+    [VectorStoreVector(VectorDimensions, DistanceFunction = DistanceFunction.CosineDistance)]
+    public override string? Vector => base.Vector;
+}
+
+public abstract class IngestedChunk<TKey> where TKey : notnull
+{
+    protected const int VectorDimensions = 384; // 384 is the default vector size for the all-minilm embedding model
 
     [VectorStoreKey]
-    public required string Key { get; set; }
+    public required TKey Key { get; set; }
 
     [VectorStoreData(IsIndexed = true)]
     public required string DocumentId { get; set; }
@@ -19,6 +24,5 @@ public class IngestedChunk
     [VectorStoreData]
     public required string Text { get; set; }
 
-    [VectorStoreVector(VectorDimensions, DistanceFunction = VectorDistanceFunction)]
-    public string? Vector => Text;
+    public virtual string? Vector => Text;
 }

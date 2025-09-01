@@ -2,24 +2,8 @@
 
 namespace AI.Workshop.VectorStore.Ingestion.Qdrant;
 
-public class IngestedDocument
+public class IngestedDocument : IngestedDocument<Guid>
 {
-    private const int VectorDimensions = 2;
-    private const string VectorDistanceFunction = DistanceFunction.DotProductSimilarity;
-
-    [VectorStoreKey]
-    public required Guid Key { get; set; }
-
-    [VectorStoreData(IsIndexed = true)]
-    public required string SourceId { get; set; }
-
-    [VectorStoreData]
-    public required string DocumentId { get; set; }
-
-    [VectorStoreData]
-    public required string DocumentVersion { get; set; }
-
-    // The vector is not used but required for some vector databases
-    [VectorStoreVector(VectorDimensions, DistanceFunction = VectorDistanceFunction)]
-    public ReadOnlyMemory<float> Vector { get; set; } = new ReadOnlyMemory<float>([0, 0]);
+    [VectorStoreVector(VectorDimensions, DistanceFunction = DistanceFunction.DotProductSimilarity)]
+    public override ReadOnlyMemory<float> Vector { get; set; } = new ReadOnlyMemory<float>([0, 0]);
 }
