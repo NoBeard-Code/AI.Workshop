@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.AI;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.VectorData;
 
 namespace AI.Workshop.VectorStore.Ingestion;
@@ -21,13 +20,6 @@ public abstract class DataIngestor<TKey, TDocument, TChunk>(
     where TChunk : class, IIngestedChunk<TKey>
 {
     public VectorStoreCollection<TKey, TChunk> Chunks => chunksCollection;
-
-    public static async Task IngestDataAsync(IServiceProvider services, IIngestionSource<TDocument, TChunk> source)
-    {
-        using var scope = services.CreateScope();
-        var ingestor = scope.ServiceProvider.GetRequiredService<DataIngestor<TKey, TDocument, TChunk>>();
-        await ingestor.IngestDataAsync(source);
-    }
 
     public async Task IngestDataAsync(IIngestionSource<TDocument, TChunk> source)
     {
