@@ -2,13 +2,15 @@
 
 namespace AI.Workshop.VectorStore.Ingestion;
 
-public interface IIngestionSource
+public interface IIngestionSource<TDocument, TChunk> 
+    where TDocument : class 
+    where TChunk : class
 {
     string SourceId { get; }
 
-    Task<IEnumerable<IngestedDocument>> GetNewOrModifiedDocumentsAsync(IReadOnlyList<IngestedDocument> existingDocuments);
+    Task<IEnumerable<TDocument>> GetNewOrModifiedDocumentsAsync(IReadOnlyList<TDocument> existingDocuments);
 
-    Task<IEnumerable<IngestedDocument>> GetDeletedDocumentsAsync(IReadOnlyList<IngestedDocument> existingDocuments);
+    Task<IEnumerable<TDocument>> GetDeletedDocumentsAsync(IReadOnlyList<TDocument> existingDocuments);
 
-    Task<IEnumerable<IngestedChunk>> CreateChunksForDocumentAsync(IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator, IngestedDocument document);
+    Task<IEnumerable<TChunk>> CreateChunksForDocumentAsync(IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator, TDocument document);
 }

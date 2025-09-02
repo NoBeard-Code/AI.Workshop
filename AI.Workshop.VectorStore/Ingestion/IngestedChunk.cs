@@ -8,7 +8,8 @@ public class IngestedChunk : IngestedChunk<string>
     public override string? Vector => base.Vector;
 }
 
-public abstract class IngestedChunk<TKey> where TKey : notnull
+public abstract class IngestedChunk<TKey> : IIngestedChunk<TKey>
+    where TKey : notnull
 {
     protected const int VectorDimensions = 384; // 384 is the default vector size for the all-minilm embedding model
 

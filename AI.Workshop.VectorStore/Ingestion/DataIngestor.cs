@@ -7,16 +7,29 @@ namespace AI.Workshop.VectorStore.Ingestion;
 public class DataIngestor(
     IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator,
     VectorStoreCollection<string, IngestedChunk> chunksCollection,
-    VectorStoreCollection<string, IngestedDocument> documentsCollection)
+    VectorStoreCollection<string, IngestedDocument> documentsCollection) 
+    : DataIngestor<string, IngestedDocument, IngestedChunk>(embeddingGenerator, chunksCollection, documentsCollection)
 {
-    public static async Task IngestDataAsync(IServiceProvider services, IIngestionSource source)
+}
+
+public abstract class DataIngestor<TKey, TDocument, TChunk>(
+    IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator,
+    VectorStoreCollection<TKey, TChunk> chunksCollection,
+    VectorStoreCollection<TKey, TDocument> documentsCollection) 
+    where TKey : notnull
+    where TDocument : class, IIngestedDocument<TKey>
+    where TChunk : class, IIngestedChunk<TKey>
+{
+    public VectorStoreCollection<TKey, TChunk> Chunks => chunksCollection;
+
+    public static async Task IngestDataAsync(IServiceProvider services, IIngestionSource<TDocument, TChunk> source)
     {
         using var scope = services.CreateScope();
-        var ingestor = scope.ServiceProvider.GetRequiredService<DataIngestor>();
+        var ingestor = scope.ServiceProvider.GetRequiredService<DataIngestor<TKey, TDocument, TChunk>>();
         await ingestor.IngestDataAsync(source);
     }
 
-    public async Task IngestDataAsync(IIngestionSource source)
+    public async Task IngestDataAsync(IIngestionSource<TDocument, TChunk> source)
     {
         await chunksCollection.EnsureCollectionExistsAsync();
         await documentsCollection.EnsureCollectionExistsAsync();
@@ -46,7 +59,7 @@ public class DataIngestor(
 
         Console.WriteLine("Ingestion is up-to-date");
 
-        async Task DeleteChunksForDocumentAsync(IngestedDocument document)
+        async Task DeleteChunksForDocumentAsync(TDocument document)
         {
             var documentId = document.DocumentId;
             var chunksToDelete = await chunksCollection.GetAsync(record => record.DocumentId == documentId, int.MaxValue).ToListAsync();

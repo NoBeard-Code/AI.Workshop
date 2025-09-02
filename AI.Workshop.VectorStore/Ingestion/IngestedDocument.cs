@@ -8,7 +8,8 @@ public class IngestedDocument : IngestedDocument<string>
     public override ReadOnlyMemory<float> Vector { get; set; } = new ReadOnlyMemory<float>([0, 0]);
 }
 
-public abstract class IngestedDocument<TKey> where TKey : notnull
+public abstract class IngestedDocument<TKey> : IIngestedDocument<TKey>
+    where TKey : notnull
 {
     protected const int VectorDimensions = 2;
 

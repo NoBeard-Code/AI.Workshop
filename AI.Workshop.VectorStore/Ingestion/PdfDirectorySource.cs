@@ -7,16 +7,51 @@ using UglyToad.PdfPig.DocumentLayoutAnalysis.WordExtractor;
 
 namespace AI.Workshop.VectorStore.Ingestion;
 
-public class PDFDirectorySource(string sourceDirectory) : IIngestionSource
+public class PDFDirectorySource(string sourceDirectory) 
+    : PDFDirectorySource<string, IngestedDocument, IngestedChunk>(sourceDirectory)
+{
+    public override IngestedDocument CreateDocument(string sourceFileId, string sourceFileVersion)
+    {
+        return new IngestedDocument
+        {
+            Key = Guid.CreateVersion7().ToString(),
+            SourceId = SourceId,
+            DocumentId = sourceFileId,
+            DocumentVersion = sourceFileVersion
+        };
+    }
+
+    public override IngestedChunk CreateChunk(string documentId, int pageNumber, string text)
+    {
+        return new IngestedChunk
+        {
+            Key = Guid.CreateVersion7().ToString(),
+            DocumentId = documentId,
+            PageNumber = pageNumber,
+            Text = text
+        };
+    }
+}
+
+public abstract class PDFDirectorySource<TKey, TDocument, TChunk>(string sourceDirectory) 
+    : IIngestionSource<TDocument, TChunk>
+    where TKey : notnull
+    where TDocument : class, IIngestedDocument<TKey>
+    where TChunk : class, IIngestedChunk<TKey>
 {
     public static string SourceFileId(string path) => Path.GetFileName(path);
     public static string SourceFileVersion(string path) => File.GetLastWriteTimeUtc(path).ToString("o");
 
     public string SourceId => $"{nameof(PDFDirectorySource)}:{sourceDirectory}";
 
-    public Task<IEnumerable<IngestedDocument>> GetNewOrModifiedDocumentsAsync(IReadOnlyList<IngestedDocument> existingDocuments)
+
+    public abstract TDocument CreateDocument(string sourceFileId, string sourceFileVersion);
+
+    public abstract TChunk CreateChunk(string documentId, int pageNumber, string text);
+
+    public Task<IEnumerable<TDocument>> GetNewOrModifiedDocumentsAsync(IReadOnlyList<TDocument> existingDocuments)
     {
-        var results = new List<IngestedDocument>();
+        var results = new List<TDocument>();
         var sourceFiles = Directory.GetFiles(sourceDirectory, "*.pdf");
         var existingDocumentsById = existingDocuments.ToDictionary(d => d.DocumentId);
 
@@ -27,14 +62,14 @@ public class PDFDirectorySource(string sourceDirectory) : IIngestionSource
             var existingDocumentVersion = existingDocumentsById.TryGetValue(sourceFileId, out var existingDocument) ? existingDocument.DocumentVersion : null;
             if (existingDocumentVersion != sourceFileVersion)
             {
-                results.Add(new() { Key = Guid.CreateVersion7().ToString(), SourceId = SourceId, DocumentId = sourceFileId, DocumentVersion = sourceFileVersion });
+                results.Add(CreateDocument(sourceFileId, sourceFileVersion));
             }
         }
 
-        return Task.FromResult((IEnumerable<IngestedDocument>)results);
+        return Task.FromResult((IEnumerable<TDocument>)results);
     }
 
-    public Task<IEnumerable<IngestedDocument>> GetDeletedDocumentsAsync(IReadOnlyList<IngestedDocument> existingDocuments)
+    public Task<IEnumerable<TDocument>> GetDeletedDocumentsAsync(IReadOnlyList<TDocument> existingDocuments)
     {
         var currentFiles = Directory.GetFiles(sourceDirectory, "*.pdf");
         var currentFileIds = currentFiles.ToLookup(SourceFileId);
@@ -42,19 +77,13 @@ public class PDFDirectorySource(string sourceDirectory) : IIngestionSource
         return Task.FromResult(deletedDocuments.AsEnumerable());
     }
 
-    public Task<IEnumerable<IngestedChunk>> CreateChunksForDocumentAsync(
-        IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator, IngestedDocument document)
+    public Task<IEnumerable<TChunk>> CreateChunksForDocumentAsync(
+        IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator, TDocument document)
     {
         using var pdf = PdfDocument.Open(Path.Combine(sourceDirectory, document.DocumentId));
         var paragraphs = pdf.GetPages().SelectMany(GetPageParagraphs).ToList();
 
-        return Task.FromResult(paragraphs.Select(p => new IngestedChunk
-        {
-            Key = Guid.CreateVersion7().ToString(),
-            DocumentId = document.DocumentId,
-            PageNumber = p.PageNumber,
-            Text = p.Text,
-        }));
+        return Task.FromResult(paragraphs.Select(p => CreateChunk(document.DocumentId, p.PageNumber, p.Text)));
     }
 
     private static IEnumerable<(int PageNumber, int IndexOnPage, string Text)> GetPageParagraphs(Page pdfPage)
