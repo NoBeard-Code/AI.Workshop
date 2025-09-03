@@ -16,7 +16,8 @@
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7122;http://localhost:5026",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "VECTOR_STORE": "Qdrant" // Options: InMemory, Qdrant, Sqlite
       }
     }
   }

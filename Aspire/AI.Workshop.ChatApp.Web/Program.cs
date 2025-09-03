@@ -1,15 +1,9 @@
 using AI.Workshop.ChatApp.Web.Components;
 using AI.Workshop.VectorStore.Ingestion;
-using QdrantBased = AI.Workshop.VectorStore.Ingestion.Qdrant;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.AI;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.VectorData;
-using Microsoft.SemanticKernel.Connectors.InMemory;
-using Microsoft.SemanticKernel.Connectors.Qdrant;
 using Octokit;
-using Qdrant.Client;
+using QdrantBased = AI.Workshop.VectorStore.Ingestion.Qdrant;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,49 +19,33 @@ builder.AddOllamaApiClient("chat")
 builder.AddOllamaApiClient("embeddings")
     .AddEmbeddingGenerator();
 
-// Uncomment the following lines to use SQLite as a vector store:
+var vectorStoreSection = builder.Configuration.GetValue<string>("VECTOR_STORE");
 
-//var vectorStorePath = Path.Combine(AppContext.BaseDirectory, "vector-store.db");
-//var vectorStoreConnectionString = $"Data Source={vectorStorePath}";
+if (vectorStoreSection == "Qdrant")
+{
+    builder.AddQdrantClient("vector-db");
 
-//builder.Services.AddSqliteCollection<string, IngestedChunk>("data-ai_workshop_chatapp-chunks", vectorStoreConnectionString);
-//builder.Services.AddSqliteCollection<string, IngestedDocument>("data-ai_workshop_chatapp-documents", vectorStoreConnectionString);
+    builder.Services.AddQdrantCollection<Guid, QdrantBased.IngestedChunk>("data-ai_workshop_chatapp-chunks");
+    builder.Services.AddQdrantCollection<Guid, QdrantBased.IngestedDocument>("data-ai_workshop_chatapp-documents");
 
-// Uncomment the following lines to use Qdrant as a vector store:
+    builder.Services.AddScoped<QdrantBased.DataIngestor>();
+    builder.Services.AddSingleton<QdrantBased.SemanticSearch>();
+}
+else if (vectorStoreSection == "Sqlite")
+{
+    var vectorStorePath = Path.Combine(AppContext.BaseDirectory, "vector-store.db");
+    var vectorStoreConnectionString = $"Data Source={vectorStorePath}";
 
-builder.AddQdrantClient("vector-db");
+    builder.Services.AddSqliteCollection<string, IngestedChunk>("data-ai_workshop_chatapp-chunks", vectorStoreConnectionString);
+    builder.Services.AddSqliteCollection<string, IngestedDocument>("data-ai_workshop_chatapp-documents", vectorStoreConnectionString);
 
-//builder.Services.Configure<QdrantVectorStoreOptions>(
-//    builder.Configuration.GetSection("Qdrant"));
-
-//builder.Services.AddSingleton<VectorStore>(provider =>
-//{
-//    var client = provider.GetRequiredService<QdrantClient>();
-//    var options = provider.GetRequiredService<IOptions<QdrantVectorStoreOptions>>().Value;
-
-//    return new QdrantVectorStore(client, true, options);
-//});
-
-builder.Services.AddQdrantCollection<Guid, QdrantBased.IngestedChunk>("data-ai_workshop_chatapp-chunks");
-builder.Services.AddQdrantCollection<Guid, QdrantBased.IngestedDocument>("data-ai_workshop_chatapp-documents");
-
-//builder.Services.AddSingleton<VectorStoreCollection<Guid, IngestedChunk>>();
-//builder.Services.AddSingleton<VectorStoreCollection<Guid, IngestedDocument>>();
-
-//builder.Services.AddSingleton(provider =>
-//{
-//    var store = provider.GetRequiredService<VectorStore>();
-//    return store.GetCollection<Guid, IngestedChunk>("data-ai_workshop_chatapp-chunks");
-//});
-
-//builder.Services.AddSingleton(provider =>
-//{
-//    var store = provider.GetRequiredService<VectorStore>();
-//    return store.GetCollection<Guid, IngestedDocument>("data-ai_workshop_chatapp-documents");
-//});
-
-builder.Services.AddScoped<QdrantBased.DataIngestor>();
-builder.Services.AddSingleton<QdrantBased.SemanticSearch>();
+    builder.Services.AddScoped<DataIngestor>();
+    builder.Services.AddSingleton<SemanticSearch>();
+}
+else
+{
+    throw new InvalidOperationException("Please set the VECTOR_STORE configuration to either 'Qdrant' or 'Sqlite'.");
+}
 
 var app = builder.Build();
 
@@ -89,10 +67,25 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 using var scope = app.Services.CreateScope();
-var ingestor = scope.ServiceProvider.GetRequiredService<QdrantBased.DataIngestor >();
 
-await ingestor.IngestDataAsync(
-    new QdrantBased.PDFDirectorySource(Path.Combine(builder.Environment.WebRootPath, "Data")));
+if (vectorStoreSection == "Qdrant")
+{
+    var ingestor = scope.ServiceProvider.GetRequiredService<QdrantBased.DataIngestor>();
+
+    await ingestor.IngestDataAsync(
+        new QdrantBased.PDFDirectorySource(Path.Combine(builder.Environment.WebRootPath, "Data")));
+}
+else if (vectorStoreSection == "Sqlite")
+{
+    var ingestor = scope.ServiceProvider.GetRequiredService<DataIngestor>();
+
+    await ingestor.IngestDataAsync(
+        new PDFDirectorySource(Path.Combine(builder.Environment.WebRootPath, "Data")));
+}
+else
+{
+    throw new InvalidOperationException("Please set the VECTOR_STORE configuration to either 'Qdrant' or 'Sqlite'.");
+}
 
 var gitHubKey = builder.Configuration["GITHUB_APIKEY"];
 var gitHubClient = new GitHubClient(new ProductHeaderValue("AI-Workshop.ChatApp.Web"))
