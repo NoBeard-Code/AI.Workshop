@@ -16,7 +16,8 @@ builder.Services.AddSingleton<MonkeyService>();
 
 builder.Services.AddMcpServer()
     .WithStdioServerTransport()
-    .WithToolsFromAssembly();
+    .WithToolsFromAssembly()
+    .WithResourcesFromAssembly();
 
 var app = builder.Build();
 

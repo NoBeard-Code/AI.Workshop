@@ -1,7 +1,7 @@
 ﻿using ModelContextProtocol.Server;
 using System.ComponentModel;
 
-namespace AI.Workshop.MCP.ConsoleServer;
+namespace AI.Workshop.MCP.ConsoleServer.Tools;
 
 [McpServerToolType]
 public static class EchoTool

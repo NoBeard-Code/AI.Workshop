@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Text.Json;
 
-namespace AI.Workshop.MCP.ConsoleServer;
+namespace AI.Workshop.MCP.ConsoleServer.Tools;
 
 [McpServerToolType]
 public static class MonkeyTools
