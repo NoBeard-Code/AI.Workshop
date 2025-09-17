@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.AI;
-using ModelContextProtocol.Client;
 using OllamaSharp;
 using System.Text;
 
@@ -29,10 +28,8 @@ internal class OllamaIntegrationExamples
 
         List<ChatMessage> history = [new(ChatRole.System, systemPrompt)];
 
-        var sampleClient = new SampleMcpClient();
-        var client = await sampleClient.GetClientAsync();
-
-        var mcpTools = await client.ListToolsAsync();
+        var workshopMcp = new WorkshopMcpService();
+        var mcpTools = await workshopMcp.GetToolsAsync();
 
         var chatOptions = new ChatOptions
         {
@@ -89,8 +86,8 @@ internal class OllamaIntegrationExamples
 
         List<ChatMessage> history = [new(ChatRole.System, systemPrompt)];
 
-        var gitHubService = new GitHubMcpService();
-        var gitHubTools = await gitHubService.GetToolsAsync();
+        var gitHubMcp = new GitHubMcpService();
+        var gitHubTools = await gitHubMcp.GetToolsAsync();
 
         var chatOptions = new ChatOptions
         {

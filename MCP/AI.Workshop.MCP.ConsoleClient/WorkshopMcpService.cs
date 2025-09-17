@@ -1,13 +1,14 @@
-﻿using ModelContextProtocol.Client;
+﻿using Microsoft.Extensions.AI;
+using ModelContextProtocol.Client;
 
 namespace AI.Workshop.MCP.ConsoleClient;
 
-internal class SampleMcpClient
+internal class WorkshopMcpService
 {
     private readonly StdioClientTransport _transport;
     private static IMcpClient? _mcpClient;
 
-    public SampleMcpClient()
+    public WorkshopMcpService()
     {
         if (_mcpClient != null)
             return;
@@ -40,5 +41,11 @@ internal class SampleMcpClient
         _mcpClient ??= await McpClientFactory.CreateAsync(_transport);
 
         return _mcpClient;
+    }
+
+    public async Task<IEnumerable<AIFunction>> GetToolsAsync()
+    {
+        var client = await GetClientAsync();
+        return await client.ListToolsAsync();
     }
 }

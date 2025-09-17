@@ -12,7 +12,7 @@ internal class McpServerStdioExamples
 {
     internal async Task EnlistServerInfoAsync()
     {
-        var sampleClient = new SampleMcpClient();
+        var sampleClient = new WorkshopMcpService();
         var client = await sampleClient.GetClientAsync();
 
         await client.PingAsync();
@@ -55,7 +55,7 @@ internal class McpServerStdioExamples
 
     internal async Task CallMcpServerToolsAsync()
     {
-        var sampleClient = new SampleMcpClient();
+        var sampleClient = new WorkshopMcpService();
         var client = await sampleClient.GetClientAsync();
 
         var result = await client.CallToolAsync("echo", new Dictionary<string, object?>() { ["message"] = "Hello MCP!" });
@@ -69,7 +69,7 @@ internal class McpServerStdioExamples
 
     internal async Task CallMonkeyToolsAsync()
     {
-        var sampleClient = new SampleMcpClient();
+        var sampleClient = new WorkshopMcpService();
         var client = await sampleClient.GetClientAsync();
 
         var result = await client.CallToolAsync("get_monkeys", new Dictionary<string, object?>());
