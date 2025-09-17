@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.AI;
 using ModelContextProtocol.Client;
 using OllamaSharp;
+using System.Text;
 
 namespace AI.Workshop.MCP.ConsoleClient;
 
@@ -38,10 +39,99 @@ internal class OllamaIntegrationExamples
             Tools = [.. mcpTools]
         };
 
-        var userPrompt = "get me the locations of the monkeys in the db";
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine(systemPrompt);
+        Console.ResetColor();
 
-        var response = await clientBuilder.GetResponseAsync(userPrompt, chatOptions);
+        while (true)
+        {
+            // Get input
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("\nQ: ");
+            var input = Console.ReadLine()!;
 
-        Console.WriteLine($"Response: {response}");
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Exiting chat.");
+                Console.ResetColor();
+                break;
+            }
+
+            history.Add(new(ChatRole.User, input));
+
+            var streamingResponse = clientBuilder.GetStreamingResponseAsync(history, chatOptions);
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("A: ");
+            var messageBuilder = new StringBuilder();
+
+            await foreach (var chunk in streamingResponse)
+            {
+                Console.Write(chunk.Text);
+                messageBuilder.Append(chunk.Text);
+            }
+
+            history.Add(new(ChatRole.Assistant, messageBuilder.ToString()));
+            Console.ResetColor();
+        }
+    }
+
+    internal async Task RagWithToolsFromGitHubServerAsync()
+    {
+        var clientBuilder = new ChatClientBuilder(_chatClient)
+            .UseFunctionInvocation()
+            .Build();
+
+        var systemPrompt = @"
+            You are a helpful assistant that provides information about my code on the GitHub.
+        ";
+
+        List<ChatMessage> history = [new(ChatRole.System, systemPrompt)];
+
+        var gitHubService = new GitHubMcpService();
+        var gitHubTools = await gitHubService.GetToolsAsync();
+
+        var chatOptions = new ChatOptions
+        {
+            Tools = [.. gitHubTools ]
+        };
+
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine(systemPrompt);
+        Console.ResetColor();
+
+        while (true)
+        {
+            // Get input
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("\nQ: ");
+            var input = Console.ReadLine()!;
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Exiting chat.");
+                Console.ResetColor();
+                break;
+            }
+
+            history.Add(new(ChatRole.User, input));
+
+            var streamingResponse = clientBuilder.GetStreamingResponseAsync(history, chatOptions);
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("A: ");
+            var messageBuilder = new StringBuilder();
+
+            await foreach (var chunk in streamingResponse)
+            {
+                Console.Write(chunk.Text);
+                messageBuilder.Append(chunk.Text);
+            }
+
+            history.Add(new(ChatRole.Assistant, messageBuilder.ToString()));
+            Console.ResetColor();
+        }
     }
 }
