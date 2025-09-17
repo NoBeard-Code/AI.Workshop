@@ -31,11 +31,11 @@ internal class OllamaIntegrationExamples
         var sampleClient = new SampleMcpClient();
         var client = await sampleClient.GetClientAsync();
 
-        var tools = await client.ListToolsAsync();
+        var mcpTools = await client.ListToolsAsync();
 
         var chatOptions = new ChatOptions
         {
-            Tools = [.. tools]
+            Tools = [.. mcpTools]
         };
 
         var userPrompt = "get me the locations of the monkeys in the db";
