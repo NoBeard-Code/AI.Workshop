@@ -1,5 +1,6 @@
 ﻿using ModelContextProtocol;
 using ModelContextProtocol.Client;
+using ModelContextProtocol.Protocol;
 
 namespace AI.Workshop.MCP.ConsoleClient;
 
@@ -37,12 +38,12 @@ internal class McpServerStdioExamples
         {
             foreach (var resource in await client.ListResourcesAsync())
             {
-                Console.WriteLine($"Resource: {resource.Name} - {resource.Description}");
+                Console.WriteLine($"Resource: {resource.Name}, {resource.Description}, {resource.MimeType}, {resource.Uri}");
             }
 
             foreach (var template in await client.ListResourceTemplatesAsync())
             {
-                Console.WriteLine($"Template: {template.Name} - {template.Description}");
+                Console.WriteLine($"Template: {template.Name}, {template.Description}, {template.MimeType}, {template.UriTemplate}");
             }
         }
 
@@ -77,5 +78,16 @@ internal class McpServerStdioExamples
 
         result = await client.CallToolAsync("get_monkey", new Dictionary<string, object?>() { ["name"] = "Baboon" });
         Console.WriteLine($"Result: {result.Content.First().ToAIContent()}");
+    }
+
+    internal async Task SendRequestToResourceAsync()
+    {
+        var sampleClient = new WorkshopMcpService();
+        var client = await sampleClient.GetClientAsync();
+
+        await client.SendRequestAsync(new JsonRpcRequest() 
+        { 
+            Method = "" 
+        });
     }
 }

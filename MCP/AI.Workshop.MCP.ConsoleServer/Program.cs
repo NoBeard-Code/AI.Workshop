@@ -23,28 +23,28 @@ builder.Services.AddMcpServer()
     .WithStdioServerTransport()
     .WithToolsFromAssembly()
     .WithResourcesFromAssembly()
-        .WithSubscribeToResourcesHandler(async (ctx, ct) =>
+    .WithSubscribeToResourcesHandler(async (ctx, ct) =>
+    {
+        var uri = ctx.Params?.Uri;
+
+        if (uri is not null)
         {
-            var uri = ctx.Params?.Uri;
+            subscriptions.Add(uri);
 
-            if (uri is not null)
+            await ctx.Server.SampleAsync([
+                new ChatMessage(ChatRole.System, "You are a helpful test server"),
+            new ChatMessage(ChatRole.User, $"Resource {uri}, context: A new subscription was started"),
+        ],
+            options: new ChatOptions
             {
-                subscriptions.Add(uri);
+                MaxOutputTokens = 100,
+                Temperature = 0.7f,
+            },
+            cancellationToken: ct);
+        }
 
-                await ctx.Server.SampleAsync([
-                    new ChatMessage(ChatRole.System, "You are a helpful test server"),
-                new ChatMessage(ChatRole.User, $"Resource {uri}, context: A new subscription was started"),
-            ],
-                options: new ChatOptions
-                {
-                    MaxOutputTokens = 100,
-                    Temperature = 0.7f,
-                },
-                cancellationToken: ct);
-            }
-
-            return new EmptyResult();
-        })
+        return new EmptyResult();
+    })
     .WithUnsubscribeFromResourcesHandler(async (ctx, ct) =>
     {
         var uri = ctx.Params?.Uri;
@@ -104,6 +104,8 @@ builder.Services.AddMcpServer()
 
         throw new NotSupportedException($"Unknown reference type: {@ref.Type}");
     });
+
+builder.Services.AddSingleton(subscriptions);
 
 var app = builder.Build();
 
