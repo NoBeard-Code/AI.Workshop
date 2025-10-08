@@ -37,6 +37,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{81C580
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blazor", "Blazor", "{02ED63A3-F82F-4AA4-9D4C-88E38E06EB81}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agents", "Agents", "{A4597AE8-5FED-41B9-BB62-7EE63BA6BF4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.ConsoleAgent", "Agents\AI.Workshop.ConsoleAgent\AI.Workshop.ConsoleAgent.csproj", "{4BDE285B-C86B-4316-A62D-FE9622F56AAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +95,10 @@ Global
 		{01895B3E-5F5A-4E5D-9E5C-084DAE13C4BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01895B3E-5F5A-4E5D-9E5C-084DAE13C4BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01895B3E-5F5A-4E5D-9E5C-084DAE13C4BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BDE285B-C86B-4316-A62D-FE9622F56AAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BDE285B-C86B-4316-A62D-FE9622F56AAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BDE285B-C86B-4316-A62D-FE9622F56AAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BDE285B-C86B-4316-A62D-FE9622F56AAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -108,6 +116,7 @@ Global
 		{6BF6B58F-9F24-A755-9188-FFC3CAC9E5B0} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{A76C6CE4-2742-4680-B159-AC5E992171B5} = {1EBCEE57-92C7-4D8B-AC99-654B5EF56A4E}
 		{01895B3E-5F5A-4E5D-9E5C-084DAE13C4BF} = {1EBCEE57-92C7-4D8B-AC99-654B5EF56A4E}
+		{4BDE285B-C86B-4316-A62D-FE9622F56AAF} = {A4597AE8-5FED-41B9-BB62-7EE63BA6BF4C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {060917CE-825E-4AEE-BA58-956C56252538}
