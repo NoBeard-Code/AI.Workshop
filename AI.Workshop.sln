@@ -41,6 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agents", "Agents", "{A4597A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.ConsoleAgent", "Agents\AI.Workshop.ConsoleAgent\AI.Workshop.ConsoleAgent.csproj", "{4BDE285B-C86B-4316-A62D-FE9622F56AAF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.WebApiAgent", "Agents\AI.Workshop.WebApiAgent\AI.Workshop.WebApiAgent.csproj", "{4EE62682-B9FD-4A9A-86AF-50252DDBB626}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{4BDE285B-C86B-4316-A62D-FE9622F56AAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BDE285B-C86B-4316-A62D-FE9622F56AAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BDE285B-C86B-4316-A62D-FE9622F56AAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EE62682-B9FD-4A9A-86AF-50252DDBB626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EE62682-B9FD-4A9A-86AF-50252DDBB626}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EE62682-B9FD-4A9A-86AF-50252DDBB626}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EE62682-B9FD-4A9A-86AF-50252DDBB626}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,6 +123,7 @@ Global
 		{A76C6CE4-2742-4680-B159-AC5E992171B5} = {1EBCEE57-92C7-4D8B-AC99-654B5EF56A4E}
 		{01895B3E-5F5A-4E5D-9E5C-084DAE13C4BF} = {1EBCEE57-92C7-4D8B-AC99-654B5EF56A4E}
 		{4BDE285B-C86B-4316-A62D-FE9622F56AAF} = {A4597AE8-5FED-41B9-BB62-7EE63BA6BF4C}
+		{4EE62682-B9FD-4A9A-86AF-50252DDBB626} = {A4597AE8-5FED-41B9-BB62-7EE63BA6BF4C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {060917CE-825E-4AEE-BA58-956C56252538}
