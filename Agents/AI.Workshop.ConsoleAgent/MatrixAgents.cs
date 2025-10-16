@@ -86,9 +86,25 @@ internal class MatrixAgents
             ChatOptions = chatOptions
         });
 
-        var response = await structuredAgent.RunAsync("Tell me about Neo from The Matrix.");
+        var response = await structuredAgent.RunAsync("Tell me about Neo from The Matrix."); // Carlo Acutis
         var personInfo = JsonSerializer.Deserialize<PersonInfo>(response.Text);
         Console.WriteLine($"Name: {personInfo?.Name}, Age: {personInfo?.Age}, Occupation: {personInfo?.Occupation}");
+    }
+
+    internal async Task UseAgentAsToolAsync(IChatClient chatClient)
+    {
+        AIAgent weatherAgent = chatClient.CreateAIAgent(
+            instructions: "You are a helpful assistant that provides weather information.",
+            tools: [AIFunctionFactory.Create(GetWeather)]
+        );
+
+        AIAgent croatianAgent = chatClient.CreateAIAgent(
+            instructions: "You are a helpful assistant who responds in Croatian.",
+            name: "CroatianTranslator",
+            tools: [weatherAgent.AsAIFunction()]
+            );
+
+        Console.WriteLine(await croatianAgent.RunAsync("What is the weather in Varaždin?"));
     }
 }
 

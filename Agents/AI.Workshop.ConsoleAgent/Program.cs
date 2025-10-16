@@ -26,5 +26,6 @@ var matrix = new MatrixAgents();
 //await matrix.DescribePhotoAsync(chatClient);
 //await matrix.MultiTurnConversationAsync(chatClient);
 //await matrix.FunctionCallingAsync(chatClient);
-await matrix.StructuredOutputAsync(chatClient);
+//await matrix.StructuredOutputAsync(chatClient);
+await matrix.UseAgentAsToolAsync(chatClient);
 
