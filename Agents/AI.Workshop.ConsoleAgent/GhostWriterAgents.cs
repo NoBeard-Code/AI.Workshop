@@ -1,26 +1,18 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
-using OpenAI;
-using OpenAI.Chat;
-using System.ClientModel;
 using System.ComponentModel;
 
 namespace AI.Workshop.ConsoleAgent;
 
-// https://devblogs.microsoft.com/dotnet/introducing-microsoft-agent-framework-preview
-
+/// <summary>
+/// Documentation:
+/// https://devblogs.microsoft.com/dotnet/introducing-microsoft-agent-framework-preview
+/// </summary>
 internal class GhostWriterAgents
 {
-    internal async Task RunAsync(string token)
+    internal async Task RunAsync(IChatClient chatClient)
     {
-        IChatClient chatClient =
-            new ChatClient(
-                    "gpt-4o-mini",
-                    new ApiKeyCredential(token),
-                    new OpenAIClientOptions { Endpoint = new Uri("https://models.github.ai/inference") })
-                .AsIChatClient();
-
         AIAgent writer = new ChatClientAgent(
             chatClient,
             new ChatClientAgentOptions
