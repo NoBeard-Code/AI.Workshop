@@ -23,5 +23,8 @@ IChatClient chatClient =
 
 var matrix = new MatrixAgents();
 //await matrix.GivePromptAsync(chatClient);
-await matrix.DescribePhotoAsync(chatClient);
+//await matrix.DescribePhotoAsync(chatClient);
+//await matrix.MultiTurnConversationAsync(chatClient);
+//await matrix.FunctionCallingAsync(chatClient);
+await matrix.StructuredOutputAsync(chatClient);
 
