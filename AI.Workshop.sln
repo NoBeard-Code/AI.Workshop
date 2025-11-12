@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.ConsoleAgent", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.WebApiAgent", "Agents\AI.Workshop.WebApiAgent\AI.Workshop.WebApiAgent.csproj", "{4EE62682-B9FD-4A9A-86AF-50252DDBB626}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI.Workshop.MCP.HttpServer", "MCP\AI.Workshop.MCP.HttpServer\AI.Workshop.MCP.HttpServer.csproj", "{5A4C3883-525D-4DA9-BDF6-995A25085997}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{4EE62682-B9FD-4A9A-86AF-50252DDBB626}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EE62682-B9FD-4A9A-86AF-50252DDBB626}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EE62682-B9FD-4A9A-86AF-50252DDBB626}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A4C3883-525D-4DA9-BDF6-995A25085997}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A4C3883-525D-4DA9-BDF6-995A25085997}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A4C3883-525D-4DA9-BDF6-995A25085997}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A4C3883-525D-4DA9-BDF6-995A25085997}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,6 +130,7 @@ Global
 		{01895B3E-5F5A-4E5D-9E5C-084DAE13C4BF} = {1EBCEE57-92C7-4D8B-AC99-654B5EF56A4E}
 		{4BDE285B-C86B-4316-A62D-FE9622F56AAF} = {A4597AE8-5FED-41B9-BB62-7EE63BA6BF4C}
 		{4EE62682-B9FD-4A9A-86AF-50252DDBB626} = {A4597AE8-5FED-41B9-BB62-7EE63BA6BF4C}
+		{5A4C3883-525D-4DA9-BDF6-995A25085997} = {1EBCEE57-92C7-4D8B-AC99-654B5EF56A4E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {060917CE-825E-4AEE-BA58-956C56252538}
